@@ -1,5 +1,20 @@
 node_modules/
 /dist/
 /build/
+/release/
 /.mygo/
+/.react-router/
+/.storybook-static/
+/coverage/
 mygo_windows_*.syso
+
+# Local agent state
+/.commandcode/
+/.claude/
+
+# Development credentials
+/.env
+/.env.*
+
+.DS_Store
+*storybook.log

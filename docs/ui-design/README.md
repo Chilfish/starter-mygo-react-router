@@ -43,17 +43,17 @@
 
 ## 4. 当前约定
 
-| 项       | 结论                                                                         |
-| -------- | ---------------------------------------------------------------------------- |
-| 技术栈   | React 19 + React Router v8 SSR + Tailwind CSS v4 + coss / Base UI            |
-| 主题     | `.dark` 类 + CSS 变量；浅色 / 深色 / 跟随系统由 `appConfig` store 持久化     |
-| 字体     | `Inter`；等宽 `Geist Mono`；中文由系统 `sans-serif` 回退（见 `app/app.css`） |
-| 主色     | `rgb(29, 155, 240)`                                                          |
-| 圆角基准 | `--radius: 0.625rem`（10px）                                                 |
-| 断点     | Tailwind 默认断点；`useMediaQuery('max-md')` 按 800px 计算                   |
-| 布局     | 移动端单列；`md` 以上可加侧栏或双栏；详情在窄屏改为整页                      |
-| 反馈     | `Empty` / `Skeleton` / `Spinner` / `Alert` / `toastManager`                  |
-| 浮层     | `Dialog` / `AlertDialog` / `Sheet` / `Drawer` / `Popover` / `Menu`           |
+| 项       | 结论                                                                          |
+| -------- | ----------------------------------------------------------------------------- |
+| 技术栈   | React 19 + React Router v8 SPA + Tailwind CSS v4 + coss / Base UI + MyGo 宿主 |
+| 主题     | `.dark` 类 + CSS 变量；浅色 / 深色 / 跟随系统由 `appConfig` store 持久化      |
+| 字体     | `Inter`；等宽 `Geist Mono`；中文由系统 `sans-serif` 回退（见 `app/app.css`）  |
+| 主色     | `rgb(29, 155, 240)`                                                           |
+| 圆角基准 | `--radius: 0.625rem`（10px）                                                  |
+| 断点     | Tailwind 默认断点；`useMediaQuery('max-md')` 按 800px 计算                    |
+| 布局     | 移动端单列；`md` 以上可加侧栏或双栏；详情在窄屏改为整页                       |
+| 反馈     | `Empty` / `Skeleton` / `Spinner` / `Alert` / `toastManager`                   |
+| 浮层     | `Dialog` / `AlertDialog` / `Sheet` / `Drawer` / `Popover` / `Menu`            |
 
 ## 5. 维护
 

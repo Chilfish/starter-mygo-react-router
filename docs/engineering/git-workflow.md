@@ -1,6 +1,6 @@
 # Git 开发流程
 
-**项目**: react-router-cossui | **最后更新**: 2026-08-09
+**项目**: starter-mygo-react-router | **最后更新**: 2026-11-01
 
 ## 分支模型
 
@@ -107,7 +107,7 @@ bun run test:coverage # 覆盖率门禁（app/lib ≥ 55%）
 - [ ] 无 `skip` / `only` / 空跑 / 源码扫描冒充行为断言
 - [ ] 遵循 [code-style.md](./code-style.md)
 - [ ] 无硬编码颜色、无 `any`、无 TODO 遗留
-- [ ] SSR 安全：渲染期不读 `window` / `document` / `localStorage`
+- [ ] 渲染安全：渲染期不读 `window` / `document` / `localStorage`
 - [ ] 导航使用 `<Link>` / `useSubmit()` / `navigate()`（如适用）
 - [ ] 数据获取路径三态覆盖（loading / empty / error）
 - [ ] 无障碍：焦点可见，图标按钮有可访问名称
@@ -119,11 +119,12 @@ bun run test:coverage # 覆盖率门禁（app/lib ≥ 55%）
 
 ## 发布流程
 
-脚手架部署到 Vercel（`react-router.config.ts` 已配置 `vercelPreset`）：
+脚手架通过 `mygo build` 打包为桌面应用：前端构建到 `build/client`，安装包输出到 `release/`。
 
-### 常规部署
+### 常规构建
 
-- `main` 分支推送自动触发 Vercel 部署（Previews + Production）
+- `main` 分支推送触发 CI（Go + Web 门禁）
+- 本地用 `bun run build` 验证当前平台安装包
 
 ### 里程碑发布（按需）
 

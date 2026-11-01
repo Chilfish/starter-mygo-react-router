@@ -14,7 +14,7 @@
 ## 审查清单
 
 - [ ] 遵循 [code-style.md](../engineering/code-style.md)：无 `any`、`catch` 用 `unknown`、三态覆盖
-- [ ] SSR 安全：渲染期不读 `window` / `document` / `localStorage`
+- [ ] 渲染安全：渲染期不读 `window` / `document` / `localStorage`
 - [ ] 浏览器 bundle 安全：服务端代码未泄漏到客户端
 - [ ] 状态订阅用 selector；persist 迁移显式
 - [ ] 导航使用 `<Link>` / `useSubmit()` / `navigate()`

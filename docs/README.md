@@ -70,6 +70,7 @@ requirements/ planning/ → engineering/ → 代码 → postmortem/ reviews/ dev
 每个 commit / PR 合并前必须通过：
 
 ```bash
+go build ./... && go vet ./...
 bun run typecheck
 bun run lint
 bun run build

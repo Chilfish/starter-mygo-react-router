@@ -1,6 +1,6 @@
 # 代码规范
 
-**项目**: react-router-cossui | **最后更新**: 2026-08-09
+**项目**: starter-mygo-react-router | **最后更新**: 2026-11-01
 
 ## TypeScript / React 风格
 

@@ -5,11 +5,11 @@ import type { MetaDescriptor, MetaFunction } from 'react-router'
  * fork 后修改这里的值为你的站点信息即可全局生效。
  */
 export const siteConfig = {
-  name: 'React Router App',
-  shortName: 'RR App',
-  description: '基于 React Router v8 + coss-ui 的全栈 Web 应用',
+  name: 'Starter MyGo React Router',
+  shortName: 'MyGo Starter',
+  description: '基于 MyGo + React Router v8 + coss-ui 的桌面应用脚手架',
   url: 'https://example.com',
-  ogImage: '/og-image.png',
+  ogImage: '/icon.png',
   twitterHandle: '@yourhandle',
   locale: 'zh_CN',
   themeColor: '#f5f9fb',

@@ -1,36 +1,44 @@
 # 系统架构
 
-> 本文档记录 react-router-cossui 的系统架构总览与关键架构决策（ADR）。
+> 本文档记录 starter-mygo-react-router 的系统架构总览与关键架构决策（ADR）。
 > fork 本脚手架后，随着真实业务落地逐步补充。
 
 ## 技术栈
 
-- **框架**：React 19 + React Router v8（框架模式，SSR）
+- **宿主**：MyGo 0.7.x（Go 主进程 + 系统 WebView）
+- **框架**：React 19 + React Router v8（框架模式，SPA：`ssr: false`）
 - **样式**：Tailwind CSS v4 + CSS 变量主题系统（`app/app.css`）
 - **组件库**：coss-ui（基于 Base UI 的无障碍组件，shadcn 风格，`app/components/ui/`）
 - **状态管理**：Zustand + localStorage 持久化（`app/stores/`）
-- **构建**：Vite 8；**部署**：Vercel（`react-router.config.ts` 的 `vercelPreset`）
+- **构建**：Vite 8；**打包**：`mygo build`（安装包输出到 `release/`）
 - **包管理器**：Bun
 
 ## 目录结构
 
 ```
+main.go         ← MyGo 窗口、绑定与事件
+mygo.config.ts  ← MyGo 构建配置（devUrl / frontendDist / bindings）
+internal/       ← Go 服务（demo：System / Greeter）
 app/
   components/
     ui/         ← coss-ui 组件库（Base UI + cva + cn()）
     shared/     ← 脚手架自带全局组件（ThemeProvider、ProgressBar、Spinner 等）
   hooks/        ← 通用 hooks（useHydrated、useMediaQuery、useNonce 等）
-  lib/          ← 纯逻辑层（cn、env.server、seo）
+  lib/          ← 纯逻辑层（cn、seo）
   routes/       ← 路由页面（在 app/routes.ts 集中声明）
   stores/       ← Zustand stores（appConfig 主题）
+  stories/      ← Storybook story
   app.css       ← 全局样式 + 设计 Token
   root.tsx      ← 根布局（Layout / ErrorBoundary / HydrateFallback）
-server/app.ts   ← SSR 入口
+  mygo.ts       ← `mygo generate` 生成的 Go 绑定
+public/         ← 静态资源（图标、manifest）
 ```
 
 ## 数据流
 
-（脚手架阶段为空。业务落地后在此描述「Loader/Action → 序列化 → UI」数据流，以及 `~/*` 路径别名约定。）
+- **Go → 前端**：服务写在 `internal/<name>/`，`main.go` 里 `mygo.Bind`，`bun run generate` 生成 `app/mygo.ts`；React 通过生成的函数调用，宿主能力只在 MyGo 窗口内可用（`isMyGo()`）。
+- **宿主事件**：Go 侧 `mygo.NewEvent` 声明，前端用 `events.<name>.on()` 订阅；`main.go` 的 `tick` 是 demo。
+- **页面数据**：业务落地后在此描述「loader / clientLoader → 序列化 → UI」数据流。当前 SPA 没有服务端 loader。
 
 ## 关键设计决策
 
@@ -48,7 +56,7 @@ server/app.ts   ← SSR 入口
 
 ### ADR-003：路径别名 `~/*`
 
-- **决策**：`tsconfig.json` `paths` + Vite `resolve.tsconfigPaths` 将 `~/*` 映射到 `app/*`。
+- **决策**：`tsconfig.json` `paths` + Vite `resolve.alias` 将 `~/*` 映射到 `app/*`。
 - **理由**：统一导入路径（`~/components/ui/<name>`），避免深层相对路径。
 - **后果**：新目录一律通过 `~` 别名引用；vitest 配置需镜像该别名（见 `vitest.config.ts`）。
 

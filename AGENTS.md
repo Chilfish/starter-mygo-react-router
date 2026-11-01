@@ -10,37 +10,37 @@
 | 新增/修改页面路由   | `app/routes.ts` → `app/routes/<name>.tsx`                         | 配置 + 页面（跑 typegen 刷新类型）                            |
 | 新增 coss 组件      | `~/components/ui/`（coss skill）                                  | `npx shadcn@latest add @coss/<component>` 或手写 Base UI 组件 |
 | 添加脚手架共享组件  | `app/components/shared/`                                          | 遵循 `cn()` + Token 约定                                      |
+| 新增 Go 服务        | `internal/<name>/` → `main.go` 的 `mygo.Bind`                     | 跑 `bun run generate` 刷新 `app/mygo.ts`                      |
 | 修改主题配置        | `app/stores/appConfig.ts` + `components/shared/ThemeProvider.tsx` | 单一数据流                                                    |
 | 修改样式/设计 Token | `app/app.css`                                                     | CSS 变量（`--background` 等）                                 |
 | 写 SEO / meta       | `app/lib/seo.ts` + 各路由 `meta` 导出                             | `generateSEOMeta()`                                           |
-| 服务端环境变量      | `app/lib/env.server.ts`（zod 校验，仅服务端）                     | 加 `serverEnvSchema` 字段                                     |
 | 写纯逻辑工具        | `app/lib/`                                                        | 函数 + 同目录 `*.spec.ts`                                     |
 
 ## 文档索引
 
-| 文档        | 路径                                     | 何时阅读                         |
-| ----------- | ---------------------------------------- | -------------------------------- |
-| 文档索引    | `docs/README.md`                         | 任何任务开始前（唯一入口）       |
-| 写作规范    | `docs/writing-style.md`                  | 写文档、文案、PR / issue 前      |
-| 需求规格    | `docs/requirements/requirements-spec.md` | 新增功能、判断功能边界           |
-| 用户故事    | `docs/requirements/user-stories.md`      | 理解用户需求、设计新特性         |
-| 系统架构    | `docs/planning/architecture.md`          | 任何架构级变更前（ADR）          |
-| 任务清单    | `docs/planning/backlog.md`               | 未决任务 + 排期                  |
-| 审查记录    | `docs/reviews/`                          | 了解已知问题清单                 |
-| Git 流程    | `docs/engineering/git-workflow.md`       | 每次 commit / PR                 |
-| 代码规范    | `docs/engineering/code-style.md`         | 写代码前                         |
-| 发布清单    | `docs/engineering/release-checklist.md`  | 里程碑发布前                     |
-| 事后分析    | `docs/postmortem/README.md`              | 写代码前自查「高频雷区」，防复现 |
-| 开发日志    | `docs/development-log/README.md`         | 了解历史决策                     |
-| UI 设计系统 | `docs/ui-design/README.md`               | 涉及 UI 时（文档地图、自检清单） |
-| 视觉规范    | `docs/ui-design/visual.md`               | 定 Token、写样式、评审视觉       |
-| 页面结构    | `docs/ui-design/patterns.md`             | 新增页面、拆组件、信息预算       |
-| 三态与反馈  | `docs/ui-design/feedback.md`             | 接数据、写空/加载/错误/浮层      |
-| 交互与状态  | `docs/ui-design/interaction.md`          | 键盘、导航、URL、持久化、SSR     |
-| 设计参考    | `docs/ui-design/research.md`             | 评审规则、引入新做法             |
-| 组件规范    | `docs/ui-design/GENERAL.md`              | 使用 coss-ui 原子组件时          |
+| 文档        | 路径                                     | 何时阅读                           |
+| ----------- | ---------------------------------------- | ---------------------------------- |
+| 文档索引    | `docs/README.md`                         | 任何任务开始前（唯一入口）         |
+| 写作规范    | `docs/writing-style.md`                  | 写文档、文案、PR / issue 前        |
+| 需求规格    | `docs/requirements/requirements-spec.md` | 新增功能、判断功能边界             |
+| 用户故事    | `docs/requirements/user-stories.md`      | 理解用户需求、设计新特性           |
+| 系统架构    | `docs/planning/architecture.md`          | 任何架构级变更前（ADR）            |
+| 任务清单    | `docs/planning/backlog.md`               | 未决任务 + 排期                    |
+| 审查记录    | `docs/reviews/`                          | 了解已知问题清单                   |
+| Git 流程    | `docs/engineering/git-workflow.md`       | 每次 commit / PR                   |
+| 代码规范    | `docs/engineering/code-style.md`         | 写代码前                           |
+| 发布清单    | `docs/engineering/release-checklist.md`  | 里程碑发布前                       |
+| 事后分析    | `docs/postmortem/README.md`              | 写代码前自查「高频雷区」，防复现   |
+| 开发日志    | `docs/development-log/README.md`         | 了解历史决策                       |
+| UI 设计系统 | `docs/ui-design/README.md`               | 涉及 UI 时（文档地图、自检清单）   |
+| 视觉规范    | `docs/ui-design/visual.md`               | 定 Token、写样式、评审视觉         |
+| 页面结构    | `docs/ui-design/patterns.md`             | 新增页面、拆组件、信息预算         |
+| 三态与反馈  | `docs/ui-design/feedback.md`             | 接数据、写空/加载/错误/浮层        |
+| 交互与状态  | `docs/ui-design/interaction.md`          | 键盘、导航、URL、持久化、hydration |
+| 设计参考    | `docs/ui-design/research.md`             | 评审规则、引入新做法               |
+| 组件规范    | `docs/ui-design/GENERAL.md`              | 使用 coss-ui 原子组件时            |
 
-## 🔴 强制规范（必须遵循）
+## 强制规范（必须遵循）
 
 1. **文档先行**：每个任务第一步更新 `docs/planning/backlog.md` 或对应方案文档；实现过程中同步记录 `docs/development-log/YYYY-MM-DD.md`，不要事后补记。
 2. **验证先行**：功能先写可验证的验收标准（FR 或 AC），再实现；新增纯逻辑必须有同目录 `*.spec.ts`。
@@ -52,12 +52,12 @@
 
 ## 核心约定（写 UI / 写代码前必读）
 
-### 🎨 设计系统铁律（源自 `docs/ui-design/visual.md`）
+### 设计系统铁律（源自 `docs/ui-design/visual.md`）
 
 ```
-✅ bg-background, text-muted-foreground, border-input
+bg-background, text-muted-foreground, border-input
 ❌ #ffffff, rgb(0,0,0), bg-[#xxx]          （禁止硬编码颜色）
-✅ 浅色/深色同时兼容（.dark 类，变量自动切换）
+浅色/深色同时兼容（.dark 类，变量自动切换）
 ❌ 用 dark: 前缀覆盖颜色
 ```
 
@@ -65,7 +65,7 @@
 - **移动端优先**：先写移动端，再用 `sm:`/`md:`/`lg:` 增强；交互过渡 150–350ms
 - **类名合并**：用 `cn()`（`~/lib/utils`）
 
-### 🚨 三态覆盖（详见 `docs/ui-design/feedback.md`）
+### 三态覆盖（详见 `docs/ui-design/feedback.md`）
 
 所有数据获取路径必须覆盖：
 
@@ -78,9 +78,9 @@ error   → 消息 + 重试
 ### 导航（React Router v8）
 
 ```
-✅ <Link to={url}>           ❌ <a href={url}>
-✅ useSubmit()               ❌ form.submit()
-✅ navigate(url)             ❌ window.location.href = url
+<Link to={url}>           ❌ <a href={url}>
+useSubmit()               ❌ form.submit()
+navigate(url)             ❌ window.location.href = url
 ```
 
 > 唯一例外：外部资源下载（如 `/api/.../download` 需浏览器原生触发）用 `<a href>`。
@@ -105,21 +105,29 @@ app/
     ui/         ← coss-ui 组件库（Base UI + cva + cn()）
     shared/     ← 脚手架全局组件（ThemeProvider、ProgressBar、Spinner 等）
   hooks/        ← useHydrated、useMediaQuery、useNonce、useIsPending
-  lib/          ← 纯逻辑层（cn、env.server、seo）+ 同目录 *.spec.ts
+  lib/          ← 纯逻辑层（cn、seo）+ 同目录 *.spec.ts
   routes/       ← 页面（在 app/routes.ts 集中声明）
   stores/       ← zustand store（appConfig 主题，persist 到 localStorage）
   app.css       ← 设计 Token + Tailwind v4 入口
   root.tsx      ← Layout / ErrorBoundary / HydrateFallback
-server/app.ts   ← SSR 入口
+  mygo.ts       ← `mygo generate` 生成的 Go 绑定
+  stories/      ← Storybook story
+internal/       ← Go 服务（demo：System / Greeter）
+main.go         ← MyGo 窗口、绑定与事件
+mygo.config.ts  ← MyGo 构建配置
+public/         ← 静态资源（图标、manifest）
 ```
 
 ### 关键点
 
+- **SPA**：`react-router.config.ts` 设 `ssr: false`；`mygo build` 嵌入 `build/client`，安装包输出到 `release/`
+- **SPA 路由**：不要在路由导出 `loader` / `action`；需要数据时用 `clientLoader` / `clientAction`
+- **Go ↔ 前端**：服务写在 `internal/`，`main.go` 里 `mygo.Bind`，`bun run generate` 生成 `app/mygo.ts`；浏览器预览没有 `window.mygo`，用 `isMyGo()` 判断
 - **路径别名**：`~/*` → `app/*`（tsconfig + vite + vitest 三处同步）
 - **路由类型**：`app/routes.ts` 改动后跑 `bun run typecheck`（内部 `react-router typegen`）刷新 `.react-router/types`；路由文件用 `import type { Route } from './+types/<name>'`
 - **coss 组件**：`~/.claude/skills/coss` 符号链接到 `.agents/skills/coss`。编写/调试 coss 组件前**先调用 coss skill**，按其 references 走（component-registry / primitives / rules）。实现模式 = Base UI `useRender` + `mergeProps` + cva 变体
 - **状态管理**：客户端局部状态用 `useState`；跨页共享才用 Zustand
-- **SSR 敏感**：`window`/`document` 只在 effect / 客户端钩子中读取
+- **hydration 敏感**：`window`/`document` 只在 effect / 客户端钩子中读取
 
 ## 开发工作流
 
@@ -129,11 +137,12 @@ server/app.ts   ← SSR 入口
 4. **修改代码**：遵循「核心约定」与 `docs/engineering/code-style.md`
 5. **验证**（每次 commit 前，lefthook / CI 强制）：
    ```bash
+   go build ./... && go vet ./...
    bun run typecheck    # 类型检查（含 typegen）
-   bun run lint         # ESLint（--fix）
+   bun run lint         # ESLint（不落盘）
    bun run test         # Vitest
    bun run test:coverage # 覆盖率门禁（app/lib ≥ 55%）
-   bun run build        # 生产构建
+   bun run build        # mygo build（前端 + 当前平台安装包）
    ```
 6. **Commit**：遵循 Conventional Commits（`<type>(<scope>): <description>`，英文祈使句）。先定 message 再写代码，超 200 行主动拆分
 7. **复盘**：新 Bug 模式写 postmortem；审查问题登记进 `docs/planning/backlog.md`「审查承接区」

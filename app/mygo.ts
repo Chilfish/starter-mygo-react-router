@@ -4,27 +4,35 @@ import { call, event } from "mygo-runtime";
 
 // ---- Types ----
 
-/** SystemInfo describes the machine the app runs on. */
+/** SystemInfo describes the app and the machine it runs on. */
 export interface SystemInfo {
+  name: string;
+  version: string;
   os: string;
   arch: string;
   goVersion: string;
+  packaged: boolean;
+  userData: string;
 }
 
 // ---- Services ----
 
 /**
  * Greeter is callable from the frontend: `mygo generate` turns its methods
- * into typed TypeScript functions in src/mygo.ts.
+ * into typed TypeScript functions in app/mygo.ts.
  */
 export const Greeter = {
   /** Greet returns a greeting for name. */
   greet(name: string): Promise<string> {
     return call("Greeter.Greet", name);
   },
-  /** Info returns information about the system. */
+} as const;
+
+/** System reports information about the running app and machine. */
+export const System = {
+  /** Info returns information about this app and the system it runs on. */
   info(): Promise<SystemInfo> {
-    return call("Greeter.Info");
+    return call("System.Info");
   },
 } as const;
 

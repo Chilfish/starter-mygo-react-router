@@ -5,14 +5,6 @@ import { generateSEOMeta } from '~/lib/seo'
 export const meta: Route.MetaFunction = () =>
   generateSEOMeta({ title: '页面未找到', noIndex: true })
 
-export async function loader({ params }: Route.LoaderArgs) {
-  throw new Response('Not found', { status: 404 })
-}
-
-export async function action() {
-  throw new Response('Not found', { status: 404 })
-}
-
 export default function NotFound() {
   return <ErrorBoundary />
 }

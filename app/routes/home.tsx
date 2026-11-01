@@ -1,4 +1,5 @@
 import type { Route } from './+types/home'
+import { MyGoDemo } from '~/components/shared/mygo-demo'
 import {
   AlertDialog,
   AlertDialogClose,
@@ -103,6 +104,10 @@ export default function Home() {
             ))}
           </SelectPopup>
         </Select>
+      </div>
+
+      <div className="mt-12 w-full max-w-xl">
+        <MyGoDemo />
       </div>
 
       <footer className="mt-16 text-xs text-muted-foreground">

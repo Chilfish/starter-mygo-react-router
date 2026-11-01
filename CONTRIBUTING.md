@@ -1,11 +1,13 @@
 # Contributing
 
-Welcome to react-router-cossui. This document covers development setup, code conventions, commit workflow, and quality gates.
+Welcome to starter-mygo-react-router. This document covers development setup, code conventions, commit workflow, and quality gates.
 
 ## Prerequisites
 
 - **[Bun](https://bun.sh/)**
+- **Go 1.27+**
 - TypeScript 6.0+
+- Windows 10 needs the WebView2 Runtime (Windows 11 includes it)
 
 ## Quick Start
 
@@ -13,10 +15,16 @@ Welcome to react-router-cossui. This document covers development setup, code con
 # Install dependencies
 bun install
 
-# Start dev server (port 9080)
-bun dev
+# Start the MyGo app (Go restarts, frontend hot reloads)
+bun run dev
 
-# Build production
+# Start the frontend only, in a browser
+bun run dev:web
+
+# Regenerate app/mygo.ts from Go
+bun run generate
+
+# Build and package the current platform
 bun run build
 
 # Typecheck
@@ -27,20 +35,27 @@ bun run lint
 
 # Test
 bun run test
+
+# Storybook
+bun run storybook
 ```
 
 ## Project Structure
 
 ```
+main.go               # MyGo window, bindings, and events
+internal/             # Go services (demo: System / Greeter)
 app/
   components/ui/      # coss-ui component library (Base UI + cva)
   components/shared/  # scaffold global components (ThemeProvider, ProgressBar, ...)
   hooks/              # generic hooks
-  lib/                # pure logic (cn, env.server, seo)
+  lib/                # pure logic (cn, seo)
   routes/             # pages (declared in app/routes.ts)
   stores/             # Zustand stores
+  stories/            # Storybook stories
   app.css             # design tokens + Tailwind v4 entry
-server/app.ts         # SSR entry
+  mygo.ts             # generated Go bindings (do not edit)
+public/               # static assets (icon, manifest)
 docs/                 # project documentation (see docs/README.md)
 ```
 
@@ -106,6 +121,7 @@ Every data-fetching path must cover: `loading → Skeleton/Spinner`, `empty → 
 Every commit / PR must pass before merge (enforced by lefthook + CI):
 
 ```bash
+go build ./... && go vet ./...
 bun run typecheck
 bun run lint
 bun run build

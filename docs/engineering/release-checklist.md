@@ -1,13 +1,12 @@
 # Release Checklist
 
-**项目**: react-router-cossui | **最后更新**: 2026-08-09
+**项目**: starter-mygo-react-router | **最后更新**: 2026-11-01
 
-> 脚手架部署到 Vercel。目标：每个「里程碑发布」的产物在真实环境验证通过，不留已知回归。
-> 常规 push 自动部署（Preview + Production）；本文档覆盖**里程碑发布**（打 tag + GitHub Release）时的完整清单。
+> 脚手架通过 `mygo build` 打包为桌面应用，安装包输出到 `release/`。目标：每个「里程碑发布」的产物在真实环境验证通过，不留已知回归。
 
 ## 版本纪律
 
-- 版本号单一来源：`package.json` `version` 字段（SemVer 2.0.0）
+- 版本号单一来源：`mygo.config.ts` 的 `version` 字段（SemVer 2.0.0）；`package.json` 的 `version` 与之保持一致
 - 仅在**验证门禁全绿**后打 tag：`git tag v0.1.0 && git push --tags`
 - 每次发布 version 单调递增，禁止回退
 - `CHANGELOG.md` 的 Unreleased 节在发布前迁移到版本节
@@ -16,23 +15,26 @@
 
 - [ ] `bun run typecheck` 通过
 - [ ] `bun run lint` 通过
-- [ ] `bun run build` 通过（react-router build）
+- [ ] `go build ./... && go vet ./...` 通过
+- [ ] `bun run build` 通过（`mygo build`，安装包输出到 `release/`）
 - [ ] `bun run test` 全绿（Vitest）
 - [ ] `bun run test:coverage` 达到阈值（`app/lib` ≥ 55%）
 - [ ] 关键测试能失败：故意改坏被测行为时相关测试会变红
 - [ ] 无 `skip` / `only` / 空跑用例冒充通过
 - [ ] lefthook pre-commit / pre-push 钩子无跳过
 
-## 功能冒烟（真实环境浏览器实测）
+## 功能冒烟（真实环境实测）
 
-> 浏览器验证在真实部署 URL（Vercel Production）执行，勾选并记录日期。业务功能落地后在此追加对应冒烟项。
+> 在 `bun run dev` 的开发版与 `bun run build` 的安装版分别验证，勾选并记录日期。业务功能落地后在此追加对应冒烟项。
 
 ### 脚手架基础
 
-- [ ] 首页加载正常（SSR 内容可见，无白屏闪烁）
+- [ ] 首页加载正常（首屏内容可见，无白屏闪烁）
 - [ ] 路由切换（`/` → 404 页）顶部进度条正常
 - [ ] 404 页面展示 + 返回首页可导航
 - [ ] 错误边界（模拟异常）展示错误信息 + 重试按钮
+- [ ] MyGo 面板显示系统信息，`Greeter` 调用返回 Go 侧结果
+- [ ] `bun run dev:web` 浏览器预览显示「Go 绑定不可用」提示，不报错
 
 ### 主题与响应式
 
@@ -65,8 +67,8 @@
 
 1. 更新 `CHANGELOG.md`（Unreleased → 版本节）
 2. 更新 `docs/README.md` 索引和文档一致性清单（如涉及新增/移动文档）
-3. 合并到 `main` → Vercel Production 部署
-4. 冒烟清单在 Production URL 上勾选
+3. 合并到 `main` → CI 通过
+4. 在开发版与安装版上勾选冒烟清单
 5. 打 Tag：`git tag v0.1.0 && git push --tags`
 6. GitHub Release：`gh release create v0.1.0 --generate-notes`
 

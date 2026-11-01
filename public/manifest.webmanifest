@@ -1,0 +1,17 @@
+{
+  "name": "Starter MyGo React Router",
+  "short_name": "MyGo Starter",
+  "description": "MyGo + React Router v8 + coss-ui desktop app starter",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f9fb",
+  "theme_color": "#f5f9fb",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

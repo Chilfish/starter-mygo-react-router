@@ -1,4 +1,4 @@
-# 交互：键盘、导航、状态与 SSR
+# 交互：键盘、导航、状态与 hydration
 
 > 本页定义本脚手架的交互约定。组件行为交给 coss / Base UI 原语；这里只写页面层需要统一的部分。
 
@@ -58,12 +58,12 @@ navigate('/settings')
 - 破坏性操作需要确认；普通保存不需要二次确认。
 - 长任务使用 Sheet 或独立区域展示进度；关闭后是否继续由业务状态决定。
 
-## 5. SSR 与 hydration
+## 5. hydration 与宿主
 
 - 渲染期间不读取 `window`、`document`、`localStorage`、`matchMedia`；放到 `useEffect` 或客户端钩子。
 - 需要判断是否已 hydration 时使用 `useHydrated()`。
 - 主题由 `ThemeProvider` 在客户端应用 `.dark` 类；`<html>` 上的 `suppressHydrationWarning` 只用于这一处。
-- 服务端专用逻辑放 `app/lib/*.server.ts`，由 `loader` / `action` 调用，不被客户端模块 import。
+- 宿主能力经 `internal/` + `mygo.Bind` 暴露；浏览器预览没有 `window.mygo`，用 `isMyGo()` 判断后再调用绑定。
 - 首屏不渲染 `Date.now()`、随机数、浏览器时区相关文本；需要时改为客户端渲染或固定时区。
 - 图标、字体等资源在 `root.tsx` 的 `links` 中声明；页面级资源放路由的 `links` 导出。
 
