@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    name: Go
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: |
+          go vet ./...
+          go vet -tags devcookie ./...
+
+      - name: Lint (golangci-lint)
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14
+
+      - name: Test
+        run: |
+          go test ./...
+          go test -tags devcookie ./...
+
+      # 硬约束：发布版只能通过登录窗口拿凭据。查三处——
+      # 1. Go 源码里只有 devcookie 标签控制的那份文件提到这个变量；
+      # 2. 不带标签编出来的二进制里没有它（前端不参与 go build）；
+      # 3. 我们的前端源码里没有它。
+      # SDK 自己的错误提示里带着这个名字（「配置登录 Cookie（config.cookie 或
+      # .env 的 WEIBO_COOKIE）」），会随前端产物进发布包；那是上游文案，
+      # 记在 docs/development-log 里回灌，这里管不到。
+      - name: Dev credential channel stays in the devcookie build
+        run: |
+          unexpected=$(grep -rl 'WEIBO_COOKIE' --include='*.go' . | grep -v 'internal/weibo/devcookie_' || true)
+          if [ -n "$unexpected" ]; then
+            echo "::error::WEIBO_COOKIE outside the devcookie-tagged files: $unexpected"
+            exit 1
+          fi
+          go build -trimpath -o /tmp/app .
+          if grep -q -a 'WEIBO_COOKIE' /tmp/app; then
+            echo "::error::the dev cookie channel leaked into the release build"
+            exit 1
+          fi
+          if grep -rn 'WEIBO_COOKIE' --include='*.ts' --include='*.tsx' app/; then
+            echo "::error::the frontend mentions the dev credential channel"
+            exit 1
+          fi
+
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      # `mygo generate` reads the Go bindings; the runner needs a Go toolchain.
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Bindings are up to date
+        run: |
+          bun run generate
+          git diff --exit-code app/mygo.ts
+
+      - name: Unused dependencies
+        run: bun run knip
+
+      - name: Test
+        run: bun test
+
+      - name: Build the frontend
+        run: bun run build:web
