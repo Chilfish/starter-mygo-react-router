@@ -12,6 +12,7 @@ import (
 func main() {
 	mygo.Bind(demo.Greeter{})
 	mygo.Bind(demo.System{})
+	mygo.Bind(demo.Searcher{})
 
 	mygo.App.WhenReady(func() {
 		win := mygo.NewWindow(mygo.WindowOptions{

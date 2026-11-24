@@ -1,5 +1,6 @@
 import type { Route } from './+types/home'
 import { MyGoDemo } from '~/components/shared/mygo-demo'
+import { SearchDemo } from '~/components/shared/search-demo'
 import {
   AlertDialog,
   AlertDialogClose,
@@ -22,7 +23,7 @@ import {
 import { generateSEOMeta } from '~/lib/seo'
 
 export function meta(): Route.MetaDescriptors {
-  return generateSEOMeta({ title: '首页' })
+  return generateSEOMeta({ title: 'Home' })
 }
 
 export default function Home() {
@@ -56,17 +57,17 @@ export default function Home() {
           </AlertDialogTrigger>
           <AlertDialogPopup>
             <AlertDialogHeader>
-              <AlertDialogTitle>确认删除</AlertDialogTitle>
+              <AlertDialogTitle>Delete account</AlertDialogTitle>
               <AlertDialogDescription>
-                此操作不可撤销。这将永久删除你的账户和相关数据。
+                This cannot be undone. It permanently deletes your account and related data.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogClose render={<Button variant="ghost" />}>
-                取消
+                Cancel
               </AlertDialogClose>
               <AlertDialogClose render={<Button variant="destructive" />}>
-                确认删除
+                Delete
               </AlertDialogClose>
             </AlertDialogFooter>
           </AlertDialogPopup>
@@ -106,12 +107,13 @@ export default function Home() {
         </Select>
       </div>
 
-      <div className="mt-12 w-full max-w-xl">
+      <div className="mt-12 flex w-full max-w-xl flex-col gap-6">
         <MyGoDemo />
+        <SearchDemo />
       </div>
 
       <footer className="mt-16 text-xs text-muted-foreground">
-        开始编辑
+        Start editing
         {' '}
         <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
           app/routes/home.tsx
