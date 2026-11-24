@@ -28,7 +28,7 @@ const config: StorybookConfig = {
       },
     },
   },
-  docs: { defaultName: '文档' },
+  docs: { defaultName: 'Docs' },
   async viteFinal(config) {
     config.plugins = [
       ...(config.plugins ?? []),

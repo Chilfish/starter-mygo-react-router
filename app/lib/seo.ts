@@ -1,23 +1,23 @@
 import type { MetaDescriptor, MetaFunction } from 'react-router'
 
 /**
- * 站点级 SEO 默认配置。
- * fork 后修改这里的值为你的站点信息即可全局生效。
+ * Site-wide SEO defaults.
+ * After forking, change these values once and every page picks them up.
  */
 export const siteConfig = {
   name: 'Starter MyGo React Router',
   shortName: 'MyGo Starter',
-  description: '基于 MyGo + React Router v8 + coss-ui 的桌面应用脚手架',
+  description: 'Desktop app starter built with MyGo, React Router v8, and coss UI',
   url: 'https://example.com',
   ogImage: '/icon.png',
   twitterHandle: '@yourhandle',
-  locale: 'zh_CN',
+  locale: 'en_US',
   themeColor: '#f5f9fb',
   backgroundColor: '#f5f9fb',
 } as const
 
 /**
- * 根据 title 生成标准的页面标题（"页面名 — 站点名" 格式）。
+ * Builds the page title in the form "Page — Site".
  */
 export function generateTitle(pageTitle?: string): string {
   if (!pageTitle)
@@ -26,29 +26,29 @@ export function generateTitle(pageTitle?: string): string {
 }
 
 export interface SEOMetaInput {
-  /** 页面标题（不包含站点名后缀） */
+  /** Page title without the site-name suffix. */
   title?: string
-  /** 页面描述，默认使用站点描述 */
+  /** Page description. Defaults to the site description. */
   description?: string
-  /** 页面规范 URL（绝对路径，如 `/about`） */
+  /** Canonical path for this page, such as `/about`. */
   canonical?: string
-  /** OG 图片，默认使用站点 OG 图片 */
+  /** Open Graph image. Defaults to the site image. */
   ogImage?: string
-  /** 是否禁止搜索引擎索引 */
+  /** Ask search engines not to index the page. */
   noIndex?: boolean
-  /** JSON-LD 结构化数据 */
+  /** JSON-LD structured data. */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
 }
 
 /**
- * 生成一组标准 SEO meta 标签。
+ * Builds a standard set of SEO meta descriptors.
  *
- * 适用于 React Router v8 的 `meta` 导出函数。
+ * Designed for the `meta` export of a React Router v8 route.
  *
  * @example
  * ```ts
  * export const meta: Route.MetaFunction = () =>
- *   generateSEOMeta({ title: '关于我们', description: '了解更多' })
+ *   generateSEOMeta({ title: 'About', description: 'Learn more' })
  * ```
  */
 export function generateSEOMeta(input: SEOMetaInput = {}): MetaDescriptor[] {
@@ -70,7 +70,7 @@ export function generateSEOMeta(input: SEOMetaInput = {}): MetaDescriptor[] {
     : `${siteConfig.url}${ogImage}`
 
   const meta: MetaDescriptor[] = [
-    // 基础
+    // Base tags
     { title: pageTitle },
     { name: 'description', content: description },
 
@@ -93,7 +93,7 @@ export function generateSEOMeta(input: SEOMetaInput = {}): MetaDescriptor[] {
     { name: 'twitter:image', content: imageUrl },
     { name: 'twitter:creator', content: siteConfig.twitterHandle },
 
-    // 机器人
+    // Robots
     {
       name: 'robots',
       content: noIndex ? 'noindex, nofollow' : 'index, follow',
@@ -105,7 +105,7 @@ export function generateSEOMeta(input: SEOMetaInput = {}): MetaDescriptor[] {
     meta.push({ tagName: 'link', rel: 'canonical', href: pageUrl } satisfies MetaDescriptor)
   }
 
-  // JSON-LD 结构化数据
+  // JSON-LD structured data
   if (jsonLd) {
     meta.push({ 'script:ld+json': jsonLd } satisfies MetaDescriptor)
   }
@@ -114,12 +114,12 @@ export function generateSEOMeta(input: SEOMetaInput = {}): MetaDescriptor[] {
 }
 
 /**
- * React Router v8 的 meta 合并工具。
- * 子路由的 meta 会覆盖父路由中相同 key 的 meta 标签。
+ * Meta merge helper for React Router v8.
+ * A child route's meta overrides tags with the same key from its parent.
  *
  * @example
  * ```ts
- * // 在父路由中
+ * // In a parent route
  * export const meta = mergeMeta<typeof loader>(({ data }) =>
  *   generateSEOMeta({ title: data?.title })
  * )

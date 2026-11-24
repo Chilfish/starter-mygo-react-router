@@ -70,13 +70,13 @@ export function MyGoDemo() {
   return (
     <Card className="w-full max-w-xl text-left">
       <CardHeader>
-        <CardTitle>MyGo 运行时</CardTitle>
+        <CardTitle>MyGo runtime</CardTitle>
         <CardDescription>
           {!hydrated
-            ? '检测运行环境…'
+            ? 'Detecting the runtime…'
             : desktop
-              ? `来自 Go 的问候，每秒更新一次。当前时间：${clock}`
-              : '浏览器预览：Go 绑定只在 mygo dev 或打包应用中可用。'}
+              ? `Greeting from Go, updated every second. Current time: ${clock}`
+              : 'Browser preview: Go bindings are only available in mygo dev or a packaged app.'}
         </CardDescription>
       </CardHeader>
 
@@ -84,13 +84,13 @@ export function MyGoDemo() {
         <CardPanel className="space-y-4">
           {info && (
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-              <dt className="text-muted-foreground">应用</dt>
+              <dt className="text-muted-foreground">App</dt>
               <dd>
                 {info.name}
                 {' '}
                 {info.version}
               </dd>
-              <dt className="text-muted-foreground">平台</dt>
+              <dt className="text-muted-foreground">Platform</dt>
               <dd>
                 {info.os}
                 /
@@ -98,20 +98,20 @@ export function MyGoDemo() {
               </dd>
               <dt className="text-muted-foreground">Go</dt>
               <dd>{info.goVersion}</dd>
-              <dt className="text-muted-foreground">用户数据</dt>
+              <dt className="text-muted-foreground">User data</dt>
               <dd className="break-all">{info.userData || '—'}</dd>
             </dl>
           )}
 
           <form className="flex gap-2" onSubmit={handleSubmit}>
             <Input
-              aria-label="你的名字"
-              placeholder="你的名字"
+              aria-label="Your name"
+              placeholder="Your name"
               value={name}
               onChange={event => setName(event.target.value)}
             />
             <Button type="submit" loading={pending}>
-              打招呼
+              Greet
             </Button>
           </form>
 

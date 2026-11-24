@@ -4,11 +4,11 @@ import { generateSEOMeta, generateTitle, mergeMeta, siteConfig } from './seo'
 describe('generateTitle', () => {
   it('withPageTitle_appendsSiteName', () => {
     // Given pageTitle
-    const pageTitle = '首页'
+    const pageTitle = 'Home'
     // When
     const result = generateTitle(pageTitle)
     // Then
-    expect(result).toBe(`首页 — ${siteConfig.name}`)
+    expect(result).toBe(`Home — ${siteConfig.name}`)
   })
 
   it('withoutPageTitle_returnsSiteName', () => {
@@ -25,9 +25,9 @@ describe('generateSEOMeta', () => {
   })
 
   it('withTitle_overridesPageTitle', () => {
-    const result = generateSEOMeta({ title: '关于' })
+    const result = generateSEOMeta({ title: 'About' })
     const title = result.find(r => 'title' in r) as { title: string }
-    expect(title.title).toBe(`关于 — ${siteConfig.name}`)
+    expect(title.title).toBe(`About — ${siteConfig.name}`)
   })
 
   it('withNoIndex_setsRobotsNoIndex', () => {
@@ -53,7 +53,7 @@ describe('generateSEOMeta', () => {
 
 describe('mergeMeta', () => {
   it('returnsSameFunction', () => {
-    const fn = () => generateSEOMeta({ title: '首页' })
+    const fn = () => generateSEOMeta({ title: 'Home' })
     expect(mergeMeta(fn)).toBe(fn)
   })
 })

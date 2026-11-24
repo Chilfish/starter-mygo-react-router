@@ -11,7 +11,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     const root = window.document.documentElement
 
-    // 移除之前的主题类
+    // Clear the previous theme class before applying the current one.
     root.classList.remove('light', 'dark')
 
     if (theme === 'system') {
@@ -25,7 +25,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   }, [theme])
 
-  // 监听系统主题变化
+  // Follow system appearance changes while the theme is `system`.
   useEffect(() => {
     if (theme !== 'system')
       return

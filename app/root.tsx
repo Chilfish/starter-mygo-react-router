@@ -31,7 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <html
-      lang="zh"
+      lang="en"
       className="touch-manipulation overflow-x-hidden"
       suppressHydrationWarning
     >
@@ -72,22 +72,22 @@ export function HydrateFallback() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-background text-foreground">
       <Loader2 className="size-8 animate-spin text-primary" />
-      <p className="mt-4 text-muted-foreground">加载中...</p>
+      <p className="mt-4 text-muted-foreground">Loading…</p>
     </div>
   )
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = '出错了'
-  let details = '发生了意外错误，请稍后重试。'
+  let message = 'Something went wrong'
+  let details = 'An unexpected error occurred. Try again in a moment.'
   let stack: string | undefined
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404
-      ? '页面未找到'
-      : '发生错误'
+      ? 'Page not found'
+      : 'Something went wrong'
     details = error.status === 404
-      ? '您要查找的页面不存在。'
+      ? 'The page you requested does not exist.'
       : error.data?.message || error.statusText
   }
   else if (error instanceof Error) {
@@ -112,10 +112,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         )}
         <div className="mt-8 flex items-center gap-4">
           <Button variant="link" render={<Link to="/" />}>
-            返回首页
+            Back to home
           </Button>
           <Button onClick={() => window.location.reload()}>
-            刷新重试
+            Reload
           </Button>
         </div>
       </div>

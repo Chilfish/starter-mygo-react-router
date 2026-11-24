@@ -20,11 +20,11 @@ const preview: Preview = {
     theme: {
       description: 'Color theme',
       toolbar: {
-        title: '主题',
+        title: 'Theme',
         icon: 'circlehollow',
         items: [
-          { value: 'light', title: '浅色' },
-          { value: 'dark', title: '深色' },
+          { value: 'light', title: 'Light' },
+          { value: 'dark', title: 'Dark' },
         ],
         dynamicTitle: true,
       },
