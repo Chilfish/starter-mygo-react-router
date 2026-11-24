@@ -1,89 +1,98 @@
-# 写作规范
+# Writing Style
 
-适用于 README、`docs/`、`CHANGELOG.md`、界面文案、PR 与 issue。目标是把话说清楚：不推销、不抒情、不堆术语。
+Applies to `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `docs/`, UI copy, pull requests, and issues. The goal is to state facts and actions clearly.
 
-## 语气
+All prose in this repository is English: documentation, code comments, UI copy, and commit messages.
 
-- 写事实和做法：现在是什么、为什么这样、怎么操作。不写愿景、意义和「我们相信」。
-- 一句话只讲一件事。超过 40 字就拆开，或者改成列表。
-- 主语尽量具体：页面、脚本、路由、组件、store。少用「我们」和「系统」。
-- 不替读者下结论。说明限制和取舍，让读者自己判断。
-- 不确定的数字、效果、性能，标注日期，或者干脆不写。
+## Tone
 
-## 用词
+- State what exists, why it works that way, and how to use it. Do not write vision statements or slogans.
+- One idea per sentence. If a sentence passes 25 words, split it or turn it into a list.
+- Name the concrete subject: page, script, route, component, store, service. Avoid "we" and "the system".
+- Do not draw conclusions for the reader. State limits and trade-offs, then let the reader decide.
+- Mark uncertain numbers, effects, and performance figures with a date. If a figure cannot be verified, leave it out.
 
-- 不堆形容词：直观、强大、轻松、深度、极致、无缝、一站式、一目了然、完美。
-- 不用产品/设计黑话：赋能、闭环、抓手、心智、锚点、叙事、降噪、颗粒度、对齐（当动词）、保驾护航。
-- 不写口号式对偶：「不是 A，而是 B」「不只 A，更是 B」「从 A 到 B」。
-- 不写填充句：「值得注意的是」「不难看出」「众所周知」。
-- 不把英文习语直译成中文。说具体现象，例如把 card soup 写成「卡片泛滥」。
-- 代码、命令、字段名、路径用反引号；中英文之间加空格；数字用半角。
+## Wording
 
-## 句子与标点
+- Do not stack adjectives: seamless, powerful, intuitive, effortless, robust, revolutionary, world-class, cutting-edge, game-changing, perfect.
+- Do not use product or design jargon: leverage, synergy, unlock, empower, north star, narrative, alignment (as a verb), guardrail.
+- Do not write paired slogans: "not just X, but Y", "more than X, it is Y".
+- Do not write filler: "it is worth noting", "as we all know", "needless to say", "in today's fast-paced world".
+- Do not translate idioms literally. Describe the observed behavior instead.
+- Put code, commands, field names, and paths in backticks.
 
-- 破折号（——）少用。中文里的停顿用「：」或逗号，一段最多一次。
-- 中文引号用「」，并列项用顿号，句末不加感叹号。
-- 标题用名词或动词短语，不用问句。
-- 列表项保持同一语法结构，一条一个意思；能写成三行短句的，不要写成一段长句。
-- 链接文字写清指向（`docs/engineering/git-workflow.md`），不写「点击这里」「详见上文」。
+## Sentences and punctuation
 
-## 界面文案
+- Prefer the active voice and the present tense: "The route renders the list", not "the list is rendered by the route".
+- Use a colon or a comma where a dash would be decorative. Avoid em dashes.
+- Headings are noun or verb phrases, not questions: "Release steps", not "How do I release?".
+- List items keep the same grammar and carry one idea each.
+- Link text names the target: `docs/engineering/git-workflow.md`, not "click here" or "see above".
 
-- 按钮和标签用动词或名词短语：`保存设置`、`清除筛选`、`重试`。
-- 空状态说三件事：这里是什么、为什么空、下一步怎么做。不写「暂无数据」了事。
-- 错误提示给可执行的下一步（重试、检查配置、看日志），不要只抛出异常名。
-- 不解释显而易见的交互，不为同一个数字写两条说明。
-- 数字带单位：`3 条记录`、`1.2 MB`、`150 ms`。
+## UI copy
 
-## 术语
+- Buttons and labels use a verb or a noun phrase: `Save settings`, `Clear filters`, `Retry`.
+- An empty state answers three questions: what this area is, why it is empty, and what to do next. "No data" is not enough.
+- An error message gives the next action: retry, check configuration, sign in again, open the log.
+- Do not explain obvious interactions. Do not write two notes for the same number.
+- Numbers carry units: `3 records`, `1.2 MB`, `150 ms`.
 
-同一概念只用一个词。先确定词，再写进文档和界面。
+## Terminology
 
-| 用         | 不用                   | 说明                                       |
-| ---------- | ---------------------- | ------------------------------------------ |
-| 页面       | 界面、视图（混用）     | 路由渲染出的完整页面                       |
-| 组件       | 控件、部件             | `app/components/` 下的 UI 单元             |
-| 路由       | 页面路径、链接         | `app/routes.ts` 中声明的路径               |
-| 设计 Token | 颜色变量、主题色       | `app/app.css` 中的 CSS 变量                |
-| 门禁       | 检查、校验（混用）     | typecheck / lint / build / test 的固定组合 |
-| 验收标准   | 测试点、检查项（混用） | 可观察、可失败的行为断言                   |
-| 数据获取   | 请求、拉取（混用）     | loader / action / 客户端请求               |
+Use one word per concept, in both docs and UI.
 
-## 文档即事实
+| Use                  | Avoid                       | Meaning                                                       |
+| -------------------- | --------------------------- | ------------------------------------------------------------- |
+| page                 | screen, view (mixed)        | A full route output                                           |
+| component            | widget, control             | A UI unit under `app/components/`                             |
+| route                | page path, link             | A path declared in `app/routes.ts`                            |
+| design token         | color variable, theme color | A CSS variable in `app/app.css`                               |
+| gate                 | check, validation (mixed)   | The fixed combination of typecheck, lint, test, and build     |
+| acceptance criterion | test point, checklist item  | An observable assertion that can fail                         |
+| data fetching        | request, pull (mixed)       | `clientLoader`, `clientAction`, or an explicit client request |
+| host                 | backend, server             | The MyGo process that owns the window and Go services         |
+| bindings             | API, bridge                 | The generated `app/mygo.ts` client                            |
 
-- 写进文档的路径、命令、路由、字段名，都要能在当前代码里对上；不确定就先跑一遍。
-- 删文件、改路由、改脚本参数时，全局搜旧写法再提交：`rg "旧路径|旧命令" README.md docs`。
-- 不把计划当现状：没做的放 `docs/planning/backlog.md` 或 `todo-*.md`，正文只写已经成立的事实。
-- 截图、数字、性能指标标日期；页面改版后替换或删掉过期图片，不留坏链。
-- 文档索引只列存在的文件。新增、移动、删除文档时同步更新 `docs/README.md`。
+## Docs are facts
 
-## 反例
+- Every path, command, route, and field name in a document must exist in the current code. Run the command before writing it down.
+- When you delete a file, rename a route, or change a script, search for the old form before committing: `rg "<old path|old command>" README.md CONTRIBUTING.md docs`.
+- Do not present plans as current state. Unfinished work belongs in `docs/planning/backlog.md` or a `todo-*.md` file.
+- Date screenshots, numbers, and performance claims. Replace or remove outdated images; leave no broken links.
+- The index lists only files that exist. Update `docs/README.md` when a document is added, moved, or removed.
 
-| 反例                             | 改写                                     |
-| -------------------------------- | ---------------------------------------- |
-| 一套开箱即用、极致优雅的脚手架。 | 提供路由、主题、组件与测试配置的脚手架。 |
-| 不是缺少功能，而是缺少体验。     | 功能已经够用，缺的是交互细节。           |
-| 首页降噪与溢出修复。             | 首页排版与溢出修复。                     |
-| 值得注意的是，Loader 会先执行。  | Loader 先于页面渲染执行。                |
-| 暂无数据。                       | 还没有记录。创建第一条后会显示在这里。   |
-| 点击这里可以打开设置。           | 打开设置。                               |
+## Counterexamples
 
-## AI 协作
+| Weak                                           | Rewrite                                                 |
+| ---------------------------------------------- | ------------------------------------------------------- |
+| A seamless, powerful starter for modern apps.  | A starter with routing, theming, components, and tests. |
+| It is worth noting that the loader runs first. | The loader runs before the page renders.                |
+| No data.                                       | No records yet. The first record will appear here.      |
+| Click here to open settings.                   | Open settings.                                          |
+| Not just a template, but a workflow.           | A template with a documented workflow.                  |
 
-- 不复述显而易见的内容，不写「总结如下」这类套话。
-- 验证结果如实写：跑了什么命令、通过还是失败、哪些没跑以及原因。
-- 不确定的写「未验证」，不猜数字、时间和效果。
-- 不用「已完成」掩盖未验证的部分。
+## AI collaboration
 
-## 提交前检查
+- Do not restate what the reader can see. Do not write "summary below" or similar transitions.
+- Report verification as it happened: which commands ran, whether they passed, and what did not run.
+- Write "not verified" for anything unchecked. Do not guess numbers, durations, or effects.
+- Do not use "done" to hide an unverified part.
+
+## Pre-commit checks
 
 ```bash
-# 命中后人工判断，不是每条都要改；没装 ripgrep 就用编辑器的全局搜索
-rg -n "直观|强大|轻松|深度|极致|无缝|一站式|一目了然|赋能|闭环|抓手|心智|锚点|叙事|降噪|颗粒度|不是.{0,12}而是|不只.{0,12}更|值得注意的是|众所周知" README.md docs
+# Hype words and filler; review each hit instead of rewriting mechanically.
+rg -n "\b(seamless|powerful|intuitive|effortless|robust|revolutionary|world-class|cutting-edge|game-changing|leverage|synergy|unlock|empower)\b" README.md CONTRIBUTING.md docs
+rg -n "it is worth noting|as we all know|needless to say" README.md CONTRIBUTING.md docs
+
+# Stale paths: compare document links against the files on disk.
+rg -n "docs/|\.md\)" README.md CONTRIBUTING.md docs
 ```
 
-- 新写的段落能否用一句话概括？不能就拆。
-- 每个形容词能否删掉而不损失信息？能就删。
-- 界面文案是否说清了「是什么、为什么、下一步」？
-- 数字是否有单位、日期和来源？
-- 文档里的路径、命令、路由是否仍能对上代码？
+Before committing:
+
+- Can the new paragraph be summarized in one sentence? If not, split it.
+- Can any adjective be removed without losing information? Remove it.
+- Does each UI string say what happened and what to do next?
+- Does every number carry a unit, a date, or a source?
+- Do the paths, commands, and routes still match the code?

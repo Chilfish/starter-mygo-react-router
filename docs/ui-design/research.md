@@ -1,324 +1,333 @@
-# UI 设计参考综述
+# Design Research
 
-> 整理于 2026-11-01。本文汇总界面规范的依据，区分平台规范、可用性研究与行业经验；具体规则见 [visual.md](./visual.md)、[patterns.md](./patterns.md) 与 [feedback.md](./feedback.md)。
-> 范围：MyGo 桌面应用（React Router v8 SPA），组件层使用 coss / Base UI，样式使用 Tailwind CSS v4。本脚手架不包含具体业务页面，文中的页面示例用于说明取舍，不代表已有实现。
+> Compiled 2026-11-01, revised 2026-11-24. This page records the sources behind the interface rules and separates platform guidance, usability research, and practitioner opinion. The rules themselves are in [visual.md](./visual.md), [patterns.md](./patterns.md), [feedback.md](./feedback.md), and [information-density.md](./information-density.md).
+>
+> Scope: a MyGo desktop app with a React Router v8 SPA, coss and Base UI components, and Tailwind CSS v4. The scaffold ships no product pages; examples below illustrate trade-offs, not existing screens.
 
-## 1. 方法与口径
+## 1. Method
 
-- **来源优先级**：平台官方规范（Apple HIG、W3C）→ 有方法的可用性研究（NN/g）→ 组件库文档（coss / Base UI）→ 行业批评与经验文章。
-- **证据类型**：规范说明「应当怎样」，研究说明「为什么」，行业文章提供常见默认值与反例。
-- **时效**：Apple HIG 与组件库随版本更新；可用性研究的结论相对稳定，示例与术语会过时。引用前核对当前版本。
-- **平台差异**：本脚手架是 MyGo 桌面应用（WebView 前端），HIG 只作为结构与行为参照；材质、窗口按钮、菜单栏等原生能力由 MyGo 提供。
-- **范围**：本文讨论界面层；功能范围、数据契约与 API 由 `docs/requirements/` 与 `docs/planning/` 承担。
+- **Source priority**: platform guidance (Apple HIG, W3C) → usability research with a stated method (NN/g) → component library documentation (coss, Base UI) → practitioner critique.
+- **Evidence type**: platform guidance says what should happen, research says why, practitioner articles supply default patterns and counterexamples.
+- **Freshness**: Apple HIG and component libraries change with releases. Usability findings age more slowly, but their examples and terminology go stale. Verify the current version before citing.
+- **Platform differences**: this is a MyGo desktop app with a WebView frontend. HIG informs structure and behavior; materials, window chrome, and the menu bar come from MyGo.
+- **Scope**: this page covers the interface layer. Feature scope, data contracts, and APIs belong to `docs/requirements/` and `docs/planning/`.
 
-## 2. 结论地图
+## 2. Conclusions
 
-| 主题       | 来源共识                                           | 本脚手架落地                                     | 文档落点                                                 |
-| ---------- | -------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
-| 信息层级   | 一屏先给答案；对比与尺寸分成少数几档               | 首屏状态 + 一个主操作 + 最多 4 个数字            | [patterns.md §0](./patterns.md#0-信息预算)               |
-| 渐进披露   | 首屏保留高频项，其余按需展开；二级层级保持一层     | 配置进对话框或 Sheet；页面保留摘要               | [patterns.md](./patterns.md)                             |
-| 卡片       | 卡片用于异构内容的浏览入口；同质内容用列表或网格   | 独立对象用 Card；同质内容用列表/表格；图片用网格 | [visual.md](./visual.md)                                 |
-| 表面       | 材质用于导航层；内容层保持可读                     | Web 端用纯色表面；浮层用阴影与填充区分           | [visual.md](./visual.md)                                 |
-| 颜色       | 限制色相数量；语义色只表达状态；文字对比达标       | 主色 + 中性色 + 三个语义色；状态配文字或图标     | [visual.md §1](./visual.md#1-颜色)                       |
-| 字号与间距 | 字阶档位拉开；间距按 4 / 8 基数                    | 4px 网格；档位之间至少差 2px                     | [visual.md](./visual.md)                                 |
-| 组件来源   | 优先使用现成原语与可访问性行为                     | coss / Base UI；Tailwind 只做布局                | [GENERAL.md](./GENERAL.md)                               |
-| 无障碍     | 对比、焦点、目标尺寸、减少动态                     | `focus-visible` 环；44px 触控目标；减少动态      | [interaction.md](./interaction.md)                       |
-| 生成式 UI  | 提示越具体越接近可用结果；进入产品前需要规范与评审 | 先写 Token、组件与结构，再生成；评审细节         | [§5](#5-评审方法)                                        |
-| hydration  | 客户端与宿主边界显式；首屏输出可复现               | 浏览器 API 只在 effect / 客户端钩子读取          | [interaction.md §5](./interaction.md#5-hydration-与宿主) |
+| Topic                  | Source consensus                                                                                   | How this scaffold applies it                                                            | Where it lives                                                  |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Information hierarchy  | Answer first; keep contrast and size to a few steps                                                | First screen shows status, one primary action, at most four numbers                     | [patterns.md § 0](./patterns.md#0-information-budget)           |
+| Progressive disclosure | Keep frequent items on the first screen; expand on request; one secondary level                    | Configuration moves into a dialog or sheet; the page keeps a summary                    | [patterns.md](./patterns.md)                                    |
+| Cards                  | Cards are browsing entry points for heterogeneous content; homogeneous content uses lists or grids | Independent objects use `Card`; homogeneous records use lists or tables                 | [visual.md](./visual.md)                                        |
+| Surfaces               | Material belongs to the navigation layer; content stays readable                                   | Solid surfaces on the web; overlays separated by shadow and fill                        | [visual.md](./visual.md)                                        |
+| Color                  | Limit hues; semantic colors express state; text must meet contrast                                 | One primary, one neutral scale, three semantic colors; status also uses text or an icon | [visual.md § 1](./visual.md#1-color)                            |
+| Type and spacing       | Spread the type scale; build on a 4/8 px base                                                      | 4 px grid; at least 2 px between type steps                                             | [visual.md](./visual.md)                                        |
+| Component source       | Use existing primitives and their accessibility behavior                                           | coss and Base UI; Tailwind for layout only                                              | [GENERAL.md](./GENERAL.md)                                      |
+| Accessibility          | Contrast, focus, target size, reduced motion                                                       | `focus-visible` ring; 44 px targets; reduced motion                                     | [interaction.md](./interaction.md)                              |
+| Density                | Uncertainty produces excessive information; cut before adding                                      | One question per screen; a fixed budget; one deletion round                             | [information-density.md](./information-density.md)              |
+| Generated UI           | Specific prompts help; human review and rules are still required                                   | Define tokens, components, and structure first; review details                          | [§ 5](#5-review-method)                                         |
+| Hydration              | Make the client and host boundaries explicit; first output is reproducible                         | Browser APIs are read in effects or client hooks                                        | [interaction.md § 5](./interaction.md#5-hydration-and-the-host) |
 
-## 3. 来源综述
+## 3. Sources
 
 ### 3.1 Apple Human Interface Guidelines
 
-**类型**：平台规范。**状态**：随系统版本更新，访问于 2026-11-01。**定位**：设计指导，不是像素级规范。
+**Type**: platform guidance. **Status**: changes with OS releases; accessed 2026-11-01. **Scope**: design direction, not a pixel specification.
 
-**长期取向**
+**Long-standing direction**
 
-- **内容优先**：界面服从内容，控件退到功能层；层次通过位置、尺寸、对比与材质表达。
-- **清晰**：文字可读、图标可辨、状态明确；装饰服务于理解。
-- **平台一致性**：使用系统控件与交互习惯；滚动、焦点与键盘路径遵循平台约定。
-- **用户控制**：破坏性操作需要确认；系统偏好（外观、字号、减少动态、增强对比）得到尊重。
+- **Content first**: the interface serves the content; controls step back and hierarchy comes from position, size, contrast, and material.
+- **Clarity**: text is legible, icons are distinguishable, state is explicit; decoration serves comprehension.
+- **Platform consistency**: use platform controls and conventions for scrolling, focus, and keyboard paths.
+- **User control**: destructive actions need confirmation; system preferences (appearance, text size, reduced motion, increased contrast) are respected.
 
-**布局与字体**
+**Layout and type**
 
-- 使用安全区与布局边距；窗口尺寸变化时按断点重排，详情在窄屏转为整页。
-- 通过邻近与留白建立分组；容器只在需要更强边界时使用，避免层层包裹。
-- 一屏保留一个主操作；次级动作靠近相关内容，低频动作进入菜单或对话框。
-- 优先系统字体栈；字号层级用少数几档拉开差距，正文保持足够行高。
-- 数字使用等宽数字；技术信息（id、路径）使用等宽字体。
+- Use safe areas and layout margins. Reflow at breakpoints; a narrow screen turns a detail view into a full page.
+- Group with proximity and whitespace. Containers appear only where a stronger boundary is needed; avoid layers of wrapping.
+- One primary action per screen. Secondary actions sit near related content; low-frequency actions go into a menu or dialog.
+- Prefer the system font stack. Use a few type steps for hierarchy and keep body line height generous.
+- Numbers use tabular figures; technical values (IDs, paths) use a monospaced font.
 
-**颜色与控件**
+**Color and controls**
 
-- 使用语义色而不是硬编码色值；颜色适配浅色与深色外观。
-- 文字与背景保持足够对比；状态同时用文字或图标表达，颜色作为辅助。
-- 品牌色用于主操作与选中态，占据少量面积。
-- 模态用于需要集中注意的任务；破坏性确认使用对话框；反馈就近展示。
-- 图标按钮带标签；键盘焦点可见；指针目标保持足够尺寸。
+- Use semantic colors instead of hardcoded values; colors adapt to light and dark appearance.
+- Keep text contrast sufficient. Express state with text or an icon; color supports it.
+- Brand color goes to primary actions and selection, over a small area.
+- Modals are for tasks that need focus. Destructive confirmation uses a dialog. Feedback appears near the action.
+- Icon buttons carry labels; keyboard focus is visible; pointer targets are large enough.
 
-**本项目采用**：语义色 Token；4px 间距与固定字阶；一个主操作；浮层焦点管理；触控目标与减少动态。**限制**：HIG 面向原生控件，Web 端用 CSS 近似；材质、窗口装饰与菜单栏不在范围内。
+**Adopted here**: semantic color tokens; 4 px spacing and a fixed type scale; one primary action; overlay focus management; touch targets; reduced motion. **Limits**: HIG targets native controls. The web frontend approximates them with CSS. Materials, window chrome, and the menu bar are out of scope.
 
-### 3.2 视觉层级（NN/g，2021-01-17）
+### 3.2 Visual hierarchy (NN/g, 2021-01-17)
 
-**类型**：可用性研究文章。**核心结论**：视觉层级决定阅读顺序；它由颜色与对比、尺寸、分组三种手段建立，不由装饰建立。
+**Type**: usability research article. **Core finding**: visual hierarchy sets reading order. It comes from color and contrast, size, and grouping, not from decoration.
 
-- 颜色数量控制在 2 个主色与 2 个辅色以内；对比变化不超过 3 档。
-- 暖色高饱和色（红、橙）留给警告与错误，普通信息使用中性色。
-- 颜色不能作为唯一的信息载体；状态同时用文字或图标表达。
-- 尺寸控制在 3 档左右；「大」的元素最多 2 个。
-- 邻近与留白是首选分组手段；容器只在留白不足时补强。
-- 「眯眼测试」：把界面模糊 5–10px，最先浮现的元素应当是希望用户先看到的元素。
+- Keep the palette to about two dominant colors and two supporting colors; use no more than three contrast steps.
+- Reserve warm, saturated colors (red, orange) for warnings and errors. Use neutrals for ordinary information.
+- Color is never the only carrier of information; express state with text or an icon too.
+- Keep sizes to about three steps, with at most two large elements.
+- Proximity and whitespace are the preferred grouping tools; containers reinforce grouping only when whitespace is not enough.
+- Squint test: blur the interface 5–10 px. The element that appears first should be the one the reader needs first.
 
-**本项目采用**：首屏一个主操作与一组数字；字号按固定档位；状态色配文字；区块用留白与一条分隔线分组。
+**Adopted here**: one primary action and one set of numbers on the first screen; a fixed type scale; state colors paired with text; grouping by whitespace and a single divider.
 
-### 3.3 渐进披露与复杂应用（NN/g，2006 / 2020）
+### 3.3 Progressive disclosure and complex applications (NN/g, 2006 and 2020)
 
-**渐进披露**（Jakob Nielsen，2006-12-03）
+**Progressive disclosure** (Jakob Nielsen, 2006-12-03)
 
-- 首屏只放高频、核心的选项；其余在用户请求时展开。
-- 两个关键判断：首屏与二级的划分是否覆盖常见任务；进入二级的入口是否显眼、标签是否说明会遇到什么。
-- 经典例子是打印对话框：首屏只放份数、范围与打印机，「缩放」「逆序」放在高级选项里。
-- 二级层级保持一层；需要三层时优先简化设计或按主题分组。
-- 收益落在可学习性、效率与错误率：新手只看到必要项，专家少扫无关项。
+- The first screen holds frequent, core options; the rest appear on request.
+- Two judgments matter: does the split between first and second level cover common tasks, and is the path to the second level visible and clearly labeled?
+- The print dialog is the classic example: copies, range, and printer first; scaling and reverse order behind advanced options.
+- Keep the secondary level to one. If a third is needed, simplify the design or group by topic.
+- The payoff is learnability, efficiency, and fewer errors: newcomers see only what they need, experts skip irrelevant items.
 
-**复杂应用设计**（Kate Kaplan，2020-11-08）
+**Designing complex applications** (Kate Kaplan, 2020-11-08)
 
-1. **边用边学**：允许用户直接开始，操作可逆，实时看到结果。
-2. **引导更高效的方法**：在上下文中提示快捷键与更快的路径，而不是依赖教程。
-3. **路径灵活**：允许跳过、回退、在步骤间移动。
-4. **帮助记录过程**：长任务提供历史与断点，降低工作记忆负担。
-5. **协调工具切换**：提供导出、复制等连接点，减少跨工具搬运。
-6. **在保持能力的前提下去掉杂乱**：高级参数只在相关选项打开后出现。
-7. **缓和一级与二级信息之间的切换**：用浮层、提示与侧栏展示补充信息，避免离开当前屏幕。
-8. **让重要信息在视觉上突出**：删除无关元素与装饰同样有效。
+1. **Learn while doing**: let people start immediately, keep actions reversible, and show results in place.
+2. **Guide faster paths**: surface shortcuts and quicker routes in context instead of relying on tutorials.
+3. **Flexible paths**: allow skipping, going back, and moving between steps.
+4. **Help remember progress**: long tasks keep history and checkpoints to reduce working-memory load.
+5. **Coordinate tool switches**: provide export and copy points so work does not need to be moved by hand.
+6. **Remove clutter without losing capability**: advanced parameters appear only after the relevant option is enabled.
+7. **Ease the move between first and second level**: use overlays, hints, and side panels instead of leaving the current screen.
+8. **Make important information visually prominent**: deleting irrelevant elements and decoration works as well as adding emphasis.
 
-**本项目采用**：筛选、创建、导入等配置进入对话框或 Sheet；页面保留摘要与入口；概览的完整统计进入二级区域。
+**Adopted here**: filters, creation, and import live in dialogs or sheets; the page keeps a summary and an entry point; full statistics on an overview move to a secondary area.
 
-### 3.4 卡片组件（NN/g，2016-11-06）
+### 3.4 Cards (NN/g, 2016-11-06)
 
-**定义**：卡片把少量相关信息组成一个视觉单元，通常包含图片、标题、摘要与一个指向详情的入口。
+**Definition**: a card groups a small amount of related information into one visual unit, usually with an image, title, summary, and an entry point to the detail.
 
-**四个属性**
+**Four properties**
 
-1. 用于分组：把相关的多种信息块放在一起。
-2. 摘要 + 链接：卡片本身是入口，完整内容在详情页。
-3. 外观像实体卡片：边框、背景与阴影表达可点击性。
-4. 布局灵活：不同卡片可以容纳不同数量的信息。
+1. Groups related information blocks.
+2. Summary plus link: the card is the entry point, and the full content lives on a detail page.
+3. Looks like a physical card: border, background, and shadow signal that it is clickable.
+4. Flexible layout: different cards can hold different amounts of information.
 
-**适用场景**
+**Good fit**
 
-- 异构内容浏览：图文混合、不同数据模块。
-- 需要明确「一个对象 → 一个入口」的集合。
-- 内容差异大、无法用统一列结构表达时。
+- Browsing heterogeneous content such as mixed media or unrelated data modules.
+- Sets where one object maps to one entry point.
+- Content too varied for a consistent column structure.
 
-**不适用场景**
+**Poor fit**
 
-- 同质内容、需要快速扫读或比较：列表或表格的列位置稳定，扫读成本更低。
-- 照片库：图片本身已经自包含，边框不会带来额外信息，使用普通网格。
-- 需要强调排名或顺序：卡片的可变尺寸会削弱顺序信号。
+- Homogeneous content that must be scanned or compared quickly; stable column positions in a list or table are cheaper to read.
+- Photo libraries: the image is self-contained, and a border adds nothing.
+- Content where order or rank matters; variable card sizes weaken the ordering signal.
 
-**本项目采用**：独立对象与详情入口使用 Card；同质记录用列表或表格；图片集合用网格；卡片内不再套卡片。
+**Adopted here**: independent objects with a detail entry use `Card`; homogeneous records use lists or tables; image sets use a plain grid; cards never nest.
 
-### 3.5 仪表盘与预注意加工（NN/g，2017-06-18）
+### 3.5 Dashboards and preattentive processing (NN/g, 2017-06-18)
 
-**定义**：仪表盘是单页、扫一眼即可获得关键信息并采取行动的视图；它服务快速判断，不承担完整探索。
+**Definition**: a dashboard is a single screen where a quick glance yields the key information and the next action. It supports fast judgment, not full exploration.
 
-- 人能在不集中注意的情况下快速感知长度、2D 位置、面积、角度与颜色。
-- 长度与 2D 位置适合表达数量：柱状图的长度、折线图的 2D 位置能快速比较大小。
-- 面积与角度不适合快速比较：饼图、环形图、树图需要更多认知资源。
-- 颜色适合表达分类，不适合表达数量；色觉差异人群约占男性 8%、女性 0.5%。
-- 3D 图表会扭曲长度与面积，降低读取准确度。
-- 每个指标配一个装饰图标会提高视觉搜索成本。
+- People perceive length, 2D position, area, angle, and color quickly, without focused attention.
+- Length and 2D position encode quantity well: bar length and line position support fast comparison.
+- Area and angle do not: pie charts, donuts, and treemaps cost more attention.
+- Color suits categories, not quantities. Color vision differences affect about 8% of men and 0.5% of women.
+- 3D charts distort length and area and reduce reading accuracy.
+- A decorative icon per metric increases visual search cost.
 
-**本项目采用**：概览用文字数字与标签；需要图表时优先柱状与折线，颜色只做分类辅助；不引入装饰性图表。
+**Adopted here**: overviews use text and labels for numbers. When charts are needed, prefer bars and lines, and use color only as a category aid. No decorative charts.
 
-### 3.6 AI 生成界面评估（NN/g，2025-10-24，2026-08-19 复核）
+### 3.6 Evaluating AI-generated interfaces (NN/g, 2025-10-24, rechecked 2026-08-19)
 
-**方法**：以真实资料页重设计为任务，比较设计稿生成、代码原型与通用聊天机器人，使用宽泛描述、详细文字规格、文字加设计稿三种提示。
+**Method**: participants redesigned a real profile page using design generation, code prototyping, and a general chatbot, with three prompt types: broad description, detailed text specification, and text plus a design reference.
 
-**发现**
+**Findings**
 
-- 提示越具体，结果越接近人类设计；附设计稿时最准确，但设计决策已经由人完成。
-- 详细提示下仍会出现层级与分组缺失、颜色过多、对比不足、间距不一致。
-- 宽泛提示下出现「模板错配」：把页面理解成另一种常见类型。
-- 没有视觉规范时，输出趋向通用风格：无衬线字体、极简配色、常见组件库，页面「远看不错，近看不足」。
-- 结论：AI 适合早期构思与可测试原型；进入产品前需要人类判断、规范与迭代。
+- More specific prompts produced results closer to human design. A design reference was most accurate, but the design decisions had already been made by a person.
+- Even detailed prompts produced missing hierarchy and grouping, too many colors, weak contrast, and inconsistent spacing.
+- Broad prompts produced template mismatch: the page was read as a different familiar page type.
+- Without visual rules, output converges on a generic style: sans-serif type, minimal palette, common component library. It looks fine at a distance and weak up close.
+- Conclusion: AI suits early exploration and testable prototypes. Production needs human judgment, rules, and iteration.
 
-**本项目采用**：先把 Token、组件与页面结构写进文档，再让实现对齐文档；评审看层级、分组、间距与对比，不只看整体截图。
+**Adopted here**: write tokens, components, and page structure into documents first, then make the implementation match. Review hierarchy, grouping, spacing, and contrast, not only the overall screenshot.
 
-### 3.7 AI slop 的行业讨论
+### 3.7 Practitioner discussion of "AI slop"
 
-**类型**：设计博客、工具文档与社区指南。**性质**：经验总结与观点；本文只采纳有可检查规则的部分。
+**Type**: design blogs, tool documentation, and community guides. **Nature**: experience and opinion. This page adopts only parts that can be checked.
 
-**常见成因**
+**Common causes**
 
-- 缺少约束时收敛到训练数据的统计中心：紫蓝渐变、同一种无衬线字体、三张等权重卡片、每张卡都有边框与阴影、压缩的字阶、默认深色模式。
-- 提示缺少方向、模型偏向安全与平均、模板占比高。
-- 处方：限制色板、固定字阶、锁定间距、默认无边框表面、只保留一层 elevation、提供真实参考。
+- Without constraints, output converges on the statistical center of the training data: purple-blue gradients, one sans-serif, three equal-weight cards, a border and shadow on every card, a compressed type scale, dark mode by default.
+- Prompts lack direction; models favor safe, average output; templates dominate the corpus.
+- Prescription: limit the palette, fix the type scale, lock spacing, default to no container, keep one elevation, supply a real reference.
 
-**仪表盘的四个症状**
+**Four dashboard symptoms**
 
-1. **顶部没有答案**：一排等权重的数字卡，读者不知道先看哪个。
-2. **所有元素音量相同**：每张卡一种颜色、每个指标同样大。
-3. **页面从不安静**：长期挂着黄色警告，用户很快忽略所有提示。
-4. **0 在说谎**：加载失败与真实为零都显示 0。
+1. **No answer at the top**: a row of equal-weight stat cards gives no order of reading.
+2. **Everything at the same volume**: one color per card, one size per metric.
+3. **The page never goes quiet**: a permanent warning badge trains people to ignore all alerts.
+4. **Zero lies**: a failed load and a real zero look identical.
 
-**可执行的规则**
+**Actionable rules**
 
-- 先指出页面最泛化的三处（色板、布局、字体、组件处理）。
-- 选定一种方向，写出 Token、组件状态与禁用清单。
-- 按区块重构，检查层级、响应式、可访问性与一致性，而不是只评判首屏截图。
-- 常见清单：过大的圆角、装饰性图标、每屏都带 Badge、卡片套卡片、渐变按钮、无层级的统计卡行、默认深色模式。
+- Name the three most generic things on the page first: palette, layout, type, component treatment.
+- Choose one direction, then write tokens, component states, and a forbidden list.
+- Rebuild section by section and check hierarchy, responsiveness, accessibility, and consistency, not just the first-screen screenshot.
+- Common list: oversized radii, decorative icons, a badge on every screen, cards inside cards, gradient buttons, flat rows of stat cards, dark mode by default.
 
-**本项目采用**：首屏先给答案；数字限制在 4 个；状态如实呈现；默认无容器；字阶固定；装饰图标不进指标区。清单落在 [visual.md §7](./visual.md#7-常见反模式)。
+**Adopted here**: the first screen gives the answer; numbers are capped at four; state is reported honestly; no container by default; a fixed type scale; no decorative icons in metric areas. The checklist is in [visual.md § 7](./visual.md#7-common-anti-patterns), and the density rules are in [information-density.md](./information-density.md).
 
-### 3.8 组件系统：coss / Base UI
+### 3.8 Component systems: coss and Base UI
 
-**类型**：组件库文档与源码。**日期**：持续更新，访问于 2026-11-01。
+**Type**: component library documentation and source. **Date**: continuously updated; accessed 2026-11-01.
 
-- coss 基于 Base UI，提供按钮、对话框、菜单、选择器、表单、Toast 等原语与组合示例。
-- 原语负责焦点管理、键盘交互、浮层定位与可访问性语义；样式通过 Token 与 Tailwind 表达。
-- 组合优先于重写：先找 primitive 或 particle，再写页面级组件；同一交互只保留一种实现。
-- 新增组件遵循仓库现有模式：`useRender` + `mergeProps` + cva 变体 + `cn()`。
+- coss builds on Base UI and provides primitives and composition examples for buttons, dialogs, menus, selects, forms, and toasts.
+- Primitives handle focus management, keyboard interaction, overlay positioning, and accessibility semantics. Styling is expressed through tokens and Tailwind.
+- Compose before rewriting: look for a primitive or particle before writing a page-level component, and keep one implementation per interaction.
+- New components follow the existing pattern: `useRender`, `mergeProps`, cva variants, `cn()`.
 
-**本项目采用**：`app/components/ui/` 是唯一原语来源；新增交互先查原语；组件级约定见 [GENERAL.md](./GENERAL.md)。
+**Adopted here**: `app/components/ui/` is the only primitive source. Check for a primitive before adding an interaction. Component conventions are in [GENERAL.md](./GENERAL.md).
 
-### 3.9 无障碍
+### 3.9 Accessibility
 
-**类型**：W3C 规范与平台能力。**日期**：WCAG 2.2 于 2023-10 成为 W3C 推荐标准。
+**Type**: W3C specifications and platform capability. WCAG 2.2 became a W3C Recommendation in October 2023.
 
-- 正文文字对比至少 4.5:1；大字号至少 3:1；界面组件与图形至少 3:1。
-- 焦点状态可见；键盘可以到达全部操作；浮层关闭后焦点回到触发元素。
-- 指针目标至少 24×24 CSS 像素（WCAG 2.2 AA）；触控目标的平台建议为 44×44pt。
-- 支持「减少动态」：保留淡入，去掉位移与缩放。
-- 文本放大后布局保持可读；长文本允许换行与滚动。
-- 颜色不能作为唯一的信息载体。
+- Body text contrast is at least 4.5:1; large text at least 3:1; interface components and graphics at least 3:1.
+- Focus is visible, every action is reachable by keyboard, and focus returns to the trigger when an overlay closes.
+- Pointer targets are at least 24×24 CSS px (WCAG 2.2 AA). Platform guidance for touch targets is 44×44 pt.
+- Reduced motion is respected: keep fades, remove movement and scale.
+- Layout stays readable when text is enlarged; long text wraps and scrolls.
+- Color is never the only carrier of information.
 
-**本项目采用**：颜色 Token；`focus-visible` 环；图标按钮带 `aria-label`；触控目标 44px；`prefers-reduced-motion`。**注意**：当前主色 `rgb(29,155,240)` 与白色的对比约 3:1，适合大字号与图形；正文或小字号按钮需要更高对比时使用 `foreground` 或更深的品牌色变体。
+**Adopted here**: color tokens; a `focus-visible` ring; `aria-label` on icon buttons; 44 px touch targets; `prefers-reduced-motion`. **Note**: the current primary `rgb(29, 155, 240)` is roughly 3:1 against white. It suits large text and graphics. Body text and small buttons need `foreground` or a darker brand variant.
 
-## 4. 正反例库
+## 4. Examples
 
-| 场景       | 反例                                         | 正例                                             | 依据                         |
-| ---------- | -------------------------------------------- | ------------------------------------------------ | ---------------------------- |
-| 首屏       | 6 张卡片平铺，9 个统计数字常驻，配置表单展开 | 状态 + 一个主操作 + 4 个数字；统计与配置进对话框 | NN/g 层级、渐进披露          |
-| 顶部数字   | 一排等权重统计卡，没有结论                   | 先给一句答案与待办，再给数字                     | AI slop 仪表盘四症状         |
-| 数据失败   | 加载失败显示 0，与真实为零相同               | 「无法加载」+ 最后已知值 + 时间 + 重试           | NN/g 系统状态；AI slop       |
-| 颜色权重   | 每张卡一种强调色                             | 只给答案上色，其余中性                           | NN/g 颜色上限                |
-| 容器       | 每张卡都有边框和阴影，卡片里再套卡片         | 区块默认无容器，留白分组；需要边界时一条分隔线   | NN/g 分组；AI slop           |
-| 同质列表   | 20 条同类记录用大卡片展示                    | 列表或表格；照片用普通网格                       | NN/g 卡片适用性              |
-| 高级选项   | 目标账号、时间范围、开关全部常驻首屏         | 首屏只留摘要与入口，选项进对话框                 | NN/g 打印对话框示例          |
-| 图表选择   | 用环形图、树图或 3D 图做快速比较             | 柱状图与折线图，长度与 2D 位置表达数量           | NN/g 预注意加工              |
-| 空状态     | 「暂无数据」                                 | 这里是什么、为什么空、下一步做什么               | [feedback.md](./feedback.md) |
-| 生成式 UI  | 宽泛提示直接生成，层级与间距失控             | 先写 Token、组件与结构，再生成；评审细节         | NN/g AI 原型评估             |
-| 状态表达   | 只用颜色区分成功与失败                       | 颜色 + 文字或图标；对比度达标                    | NN/g；WCAG 2.2               |
-| 数字装饰   | 每个指标配一个装饰图标                       | 去掉装饰，让数字本身突出                         | NN/g 复杂应用 §8             |
-| 移动端交互 | 只写 hover 状态，触屏没有反馈                | 同时提供 `active` 与 `focus-visible`             | 触屏平台约定                 |
-| 筛选状态   | 筛选只放组件状态，刷新或返回后丢失           | 结果集筛选写入 URL；展示偏好进 store             | 可分享与可返回               |
+| Case               | Wrong                                                           | Right                                                                      | Basis                                              |
+| ------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------- |
+| First screen       | Six cards, nine permanent metrics, an expanded config form      | Status, one primary action, four numbers; statistics and config in dialogs | NN/g hierarchy, progressive disclosure             |
+| Top numbers        | A row of equal-weight stat cards without a conclusion           | A one-line answer and next action, then numbers                            | AI slop dashboard symptoms                         |
+| Failed data        | A load failure shows `0`, identical to a real zero              | "Could not load", last known value, timestamp, retry                       | NN/g system status; AI slop                        |
+| Color weight       | One accent color per card                                       | Color only the answer; keep the rest neutral                               | NN/g color limits                                  |
+| Containers         | Every card bordered and shadowed; cards inside cards            | No container by default, group with whitespace, one divider where needed   | NN/g grouping; AI slop                             |
+| Homogeneous list   | Twenty similar records as large cards                           | A list or table; photos in a plain grid                                    | NN/g card fit                                      |
+| Advanced options   | Target account, time range, and toggles all on the first screen | Keep a summary and one entry point; options in a dialog                    | NN/g print dialog example                          |
+| Chart choice       | Donut, treemap, or 3D charts for quick comparison               | Bars and lines; length and 2D position encode quantity                     | NN/g preattentive processing                       |
+| Empty state        | "No data"                                                       | What this is, why it is empty, what to do next                             | [feedback.md](./feedback.md)                       |
+| Generated UI       | Broad prompt straight to output; hierarchy and spacing collapse | Define tokens, components, and structure first; review details             | NN/g AI prototyping evaluation                     |
+| State expression   | Color alone separates success from failure                      | Color plus text or an icon; contrast meets the minimum                     | NN/g; WCAG 2.2                                     |
+| Number decoration  | A decorative icon per metric                                    | Remove decoration and let the number stand out                             | NN/g complex applications § 8                      |
+| Mobile interaction | Only a hover state; touch gets no feedback                      | Provide `active` and `focus-visible` together                              | Touch platform conventions                         |
+| Filter state       | Filters live only in component state and vanish on reload       | Result filters go in the URL; display preferences go in the store          | Shareable, restorable links                        |
+| Dense screens      | Every available field gets a section and a caption              | Set a budget, cut one element, one question per screen                     | [information-density.md](./information-density.md) |
 
-## 5. 评审方法
+## 5. Review method
 
-每次界面改造按以下顺序自查：
+Work through this order for every interface change:
 
-1. **5 秒测试**：打开页面 5 秒后，能否说出「现在是什么状态、下一步做什么」。
-2. **眯眼测试**：模糊 5–10px，检查第一眼落在哪里；出现意外焦点时调整尺寸、对比或颜色。
-3. **三段阅读**：5 秒看异常，30 秒看位置，几分钟看原因与明细；三层信息都有落点。
-4. **Token 审计**：统计颜色、字号、圆角、阴影、边框的使用次数；出现一次性色值或半径时回到 [visual.md](./visual.md)。
-5. **无障碍**：键盘走一遍主流程；检查焦点、对比、目标尺寸、减少动态。
-6. **响应式**：360 / 768 / 1280 三个宽度各检查一次，确认内容不溢出、详情不丢失。
-7. **可用性测试**：3–5 位目标用户执行真实任务，记录卡点、误点与看不懂的文案。
+1. **Five-second test**: after five seconds, can someone state the current status and the next action?
+2. **Squint test**: blur 5–10 px and check where the eye lands. Adjust size, contrast, or color if the focus is unexpected.
+3. **Three-stage read**: five seconds for anomalies, thirty seconds for location, a few minutes for causes and detail. Each layer needs a place to land.
+4. **Token audit**: count uses of colors, type sizes, radii, shadows, and borders. A one-off value or radius sends you back to [visual.md](./visual.md).
+5. **Accessibility**: walk the main flow with a keyboard; check focus, contrast, target size, and reduced motion.
+6. **Responsive**: check 360, 768, and 1280 px. Content does not overflow and detail is not lost.
+7. **Density**: run the delete test and the three-second test from [information-density.md](./information-density.md).
+8. **Usability test**: three to five target users perform a real task; record blockers, misclicks, and confusing copy.
 
-Token 审计可以先用搜索缩小范围：
+Narrow the token audit with search:
 
 ```bash
-# 组件里的一次性颜色
+# One-off colors in components
 rg -n "#[0-9a-fA-F]{3,8}|rgb\(|hsl\(|bg-\[|text-\[" app --glob '!app.css'
 
-# 组件里用 dark: 覆盖颜色
+# dark: color overrides in components
 rg -n "dark:(bg|text|border)-" app --glob '!app.css'
 ```
 
-命中后人工判断：Token 定义、第三方组件内部样式与真正的一次性写法需要区分。
+Review each hit by hand: token definitions, third-party component internals, and genuine one-off values need different handling.
 
-## 6. 采纳与取舍
+## 6. Adopted and rejected
 
-| 建议               | 本脚手架做法                            | 原因与限制                            |
-| ------------------ | --------------------------------------- | ------------------------------------- |
-| 语义 Token 颜色    | 所有颜色来自 `app/app.css`              | 浅色/深色自动切换；一次性色值不可维护 |
-| 表面从简           | 页面用留白与分隔线；卡片只用于独立对象  | Web 端没有系统材质；阴影只用于浮层    |
-| 卡片用于异构内容   | 独立对象用 Card；同质内容用列表或表格   | 卡片提高浏览成本；列表更适合比较      |
-| 一屏一个主操作     | 主按钮唯一，其余动作降级                | 减少同权重竞争                        |
-| 最多 4 个关键数字  | 完整统计进对话框或二级页                | 首屏回答「现在怎样」，不承担全量分析  |
-| 固定字阶与间距     | 4px 网格；档位之间至少 2px              | 让层级在模糊后仍成立                  |
-| 语义色只表达状态   | info / success / warning / destructive  | 装饰交给内容与品牌色                  |
-| 组件来自原语       | `~/components/ui/`；Tailwind 只做布局   | 统一交互与可访问性                    |
-| 状态如实呈现       | 加载、失败、空态各自成态                | `0` 只在真实为零时出现                |
-| 专家页面保持密度   | 表格与搜索结果使用紧凑行                | 任务以扫读与比较为主                  |
-| 移动端优先         | 基础样式服务窄屏，断点只做增强          | 触屏与安全区需要单独验证              |
-| hydration 边界显式 | 浏览器 API 只在 effect / 客户端钩子读取 | 避免 hydration 不一致与宿主异常       |
+| Recommendation                  | What this scaffold does                                       | Reason and limit                                                       |
+| ------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Semantic color tokens           | All colors come from `app/app.css`                            | Light and dark switch automatically; one-off values are unmaintainable |
+| Simple surfaces                 | Whitespace and dividers; cards for independent objects        | The web has no system material; shadows go to overlays                 |
+| Cards for heterogeneous content | `Card` for independent objects; lists for homogeneous content | Cards raise browsing cost; lists compare better                        |
+| One primary action              | One primary button; other actions demoted                     | Reduces equal-weight competition                                       |
+| At most four key numbers        | Full statistics move to a dialog or secondary page            | The first screen answers "how is it now", not full analysis            |
+| Fixed type and spacing          | 4 px grid; at least 2 px between type steps                   | Hierarchy survives blurring                                            |
+| Semantic colors are state only  | `info`, `success`, `warning`, `destructive`                   | Decoration belongs to content and brand color                          |
+| Components from primitives      | `~/components/ui/`; Tailwind for layout                       | Consistent interaction and accessibility                               |
+| Honest state                    | Loading, failure, and empty are separate states               | `0` appears only when the value is really zero                         |
+| Expert screens stay dense       | Tables and search results use compact rows                    | The task is scanning and comparison                                    |
+| Mobile first                    | Base styles serve narrow screens; breakpoints enhance         | Touch and safe areas need separate verification                        |
+| Explicit hydration boundary     | Browser APIs are read in effects or client hooks              | Avoids hydration mismatches and host errors                            |
 
-## 7. 分歧与局限
+## 7. Disagreements and limits
 
-- **平台差异**：HIG 面向原生控件；Web 端的滚动、焦点与材质是近似实现。
-- **来源性质**：行业文章多为经验总结，样本与方法不公开；NN/g 的文章有方法说明，但部分结论来自 2006–2021 年的具体案例，示例已经过时。
-- **卡片的判断**：行业文章倾向全面否定卡片，NN/g 区分了异构与同质内容。本脚手架按后者处理。
-- **密度的判断**：概览需要安静，专家向的列表与表格需要密度；同一套规则不适用于所有页面。
-- **AI 原型研究**：NN/g 的评估基于单一资料页任务，结论指向「提示越具体越好」，跨任务迁移需要自行验证。
-- **对比度**：主色与白色的对比约 3:1，当前 Button 的 `default` 变体直接使用主色；正式产品需要按 WCAG AA 复核小字号文字。
-- **模板属性**：本脚手架没有业务页面，规则需要在真实页面中验证；本文不把计划写成现状。
-- **时效**：Apple HIG 与组件库持续更新；来源变更时更新本文。
+- **Platform differences**: HIG targets native controls. Scrolling, focus, and material on the web are approximations.
+- **Source nature**: practitioner articles are experience reports without published samples or methods. NN/g articles state a method, but some conclusions come from 2006–2021 cases whose examples are now dated.
+- **Cards**: practitioner writing tends to reject cards outright; NN/g separates heterogeneous from homogeneous content. This scaffold follows NN/g.
+- **Density**: an overview needs calm; expert lists and tables need density. One rule does not fit every page.
+- **AI prototyping research**: the NN/g evaluation used a single profile-page task. Its conclusion favors specific prompts; transfer to other tasks needs its own check.
+- **Contrast**: the primary color is about 3:1 against white, and the `default` `Button` uses it directly. A real product needs a WCAG AA review for small text.
+- **Template status**: the scaffold has no product pages, so the rules still need validation on real screens. This page does not present plans as current state.
+- **Freshness**: Apple HIG and component libraries keep changing. Update this page when a source changes.
 
-## 8. 开放问题
+## 8. Open questions
 
-- 3–5 人可用性测试尚未执行；首屏信息预算与卡片取舍需要真实任务验证。
-- 主色在浅色模式下的文字对比需要一次完整审计，确定按钮与链接的最终色值。
-- 深色模式需要按页面类型补截图核对，尤其是边框、阴影与状态色。
-- 若引入图表，需要单独评审图表类型、密度与色觉可达性。
-- AI slop 检查清单可以纳入 PR 模板，作为界面改动的自查项。
-- 当前存在两个 `useIsMobile` 实现（`use-media-query.ts` 与 `use-mobile.ts`），需要统一后才能在文档中给出单一入口。
+- The three-to-five person usability test has not run. The information budget and card trade-offs need a real task to validate.
+- Primary color contrast in light mode needs a full audit before small text and links are finalized.
+- Dark mode needs a screenshot pass by page type, especially for borders, shadows, and status colors.
+- If charts are introduced, chart type, density, and color-vision accessibility need a separate review.
+- The density checklist can join the pull request template as an item for interface changes.
+- `app/hooks/use-mobile.ts` duplicates `useIsMobile` from `app/hooks/use-media-query.ts` at 768 px instead of 800 px. It has no callers; delete it or keep the single entry point documented in [GENERAL.md § 6.2](./GENERAL.md#62-usemediaquery-and-useismobile).
 
-## 9. 参考清单
+## 9. References
 
-> 外部链接访问于 2026-11-01。Apple 文档随系统版本更新，引用前以官网当前版本为准。
+> External links accessed 2026-11-01. Apple documentation changes with OS releases; check the current version before citing.
 
-### 平台规范
+### Platform guidance
 
-| 来源                             | 类型     | 链接                                                                          |
+| Source                           | Type     | Link                                                                          |
 | -------------------------------- | -------- | ----------------------------------------------------------------------------- |
-| Apple Human Interface Guidelines | 平台规范 | <https://developer.apple.com/design/human-interface-guidelines/>              |
-| HIG: Layout                      | 平台规范 | <https://developer.apple.com/design/human-interface-guidelines/layout>        |
-| HIG: Typography                  | 平台规范 | <https://developer.apple.com/design/human-interface-guidelines/typography>    |
-| HIG: Color                       | 平台规范 | <https://developer.apple.com/design/human-interface-guidelines/color>         |
-| HIG: Materials                   | 平台规范 | <https://developer.apple.com/design/human-interface-guidelines/materials>     |
-| HIG: Accessibility               | 平台规范 | <https://developer.apple.com/design/human-interface-guidelines/accessibility> |
-| WCAG 2.2                         | 标准     | <https://www.w3.org/TR/WCAG22/>                                               |
+| Apple Human Interface Guidelines | Platform | <https://developer.apple.com/design/human-interface-guidelines/>              |
+| HIG: Layout                      | Platform | <https://developer.apple.com/design/human-interface-guidelines/layout>        |
+| HIG: Typography                  | Platform | <https://developer.apple.com/design/human-interface-guidelines/typography>    |
+| HIG: Color                       | Platform | <https://developer.apple.com/design/human-interface-guidelines/color>         |
+| HIG: Materials                   | Platform | <https://developer.apple.com/design/human-interface-guidelines/materials>     |
+| HIG: Accessibility               | Platform | <https://developer.apple.com/design/human-interface-guidelines/accessibility> |
+| WCAG 2.2                         | Standard | <https://www.w3.org/TR/WCAG22/>                                               |
 
-### 可用性研究
+### Usability research
 
-| 来源                                                              | 类型     | 日期                        | 链接                                                               |
-| ----------------------------------------------------------------- | -------- | --------------------------- | ------------------------------------------------------------------ |
-| Visual Hierarchy in UX: Definition（NN/g）                        | 研究文章 | 2021-01-17                  | <https://www.nngroup.com/articles/visual-hierarchy-ux-definition/> |
-| Progressive Disclosure（NN/g）                                    | 研究文章 | 2006-12-03                  | <https://www.nngroup.com/articles/progressive-disclosure/>         |
-| 8 Design Guidelines for Complex Applications（NN/g）              | 研究文章 | 2020-11-08                  | <https://www.nngroup.com/articles/complex-application-design/>     |
-| Cards: UI-Component Definition（NN/g）                            | 研究文章 | 2016-11-06                  | <https://www.nngroup.com/articles/cards-component/>                |
-| Dashboards: Making Charts and Graphs Easier to Understand（NN/g） | 研究文章 | 2017-06-18                  | <https://www.nngroup.com/articles/dashboards-preattentive/>        |
-| Good from Afar, But Far from Good: AI Prototyping（NN/g）         | 研究文章 | 2025-10-24，2026-08-19 复核 | <https://www.nngroup.com/articles/ai-prototyping/>                 |
-| State of UX 2026（NN/g）                                          | 年度报告 | 2026-01                     | <https://www.nngroup.com/articles/state-of-ux-2026/>               |
+| Source                                                           | Type    | Date                           | Link                                                               |
+| ---------------------------------------------------------------- | ------- | ------------------------------ | ------------------------------------------------------------------ |
+| Visual Hierarchy in UX: Definition (NN/g)                        | Article | 2021-01-17                     | <https://www.nngroup.com/articles/visual-hierarchy-ux-definition/> |
+| Progressive Disclosure (NN/g)                                    | Article | 2006-12-03                     | <https://www.nngroup.com/articles/progressive-disclosure/>         |
+| 8 Design Guidelines for Complex Applications (NN/g)              | Article | 2020-11-08                     | <https://www.nngroup.com/articles/complex-application-design/>     |
+| Cards: UI-Component Definition (NN/g)                            | Article | 2016-11-06                     | <https://www.nngroup.com/articles/cards-component/>                |
+| Dashboards: Making Charts and Graphs Easier to Understand (NN/g) | Article | 2017-06-18                     | <https://www.nngroup.com/articles/dashboards-preattentive/>        |
+| Good from Afar, But Far from Good: AI Prototyping (NN/g)         | Article | 2025-10-24, checked 2026-08-19 | <https://www.nngroup.com/articles/ai-prototyping/>                 |
+| State of UX 2026 (NN/g)                                          | Report  | 2026-01                        | <https://www.nngroup.com/articles/state-of-ux-2026/>               |
 
-### 行业批评与检查清单
+### Practitioner critique and checklists
 
-| 来源                                  | 类型       | 日期       | 链接                                                                    |
-| ------------------------------------- | ---------- | ---------- | ----------------------------------------------------------------------- |
-| Good Dashboard Design vs AI Slop      | 经验文章   | 2026-10-07 | <https://ssicevs.com/blog/good-dashboard-design-vs-ai-slop>             |
-| What is AI slop UI                    | 术语与清单 | 2026-07-04 | <https://uiscanner.com/blog/what-is-ai-slop-ui>                         |
-| Avoid AI Slop（StyleKit）             | 工具文档   | 2026-10-31 | <https://www.stylekit.top/en/avoid-ai-slop>                             |
-| Escaping AI Slop: 4 Overused Patterns | 经验文章   | 2026       | <https://noqta.tn/en/blog/ai-design-slop-overused-ui-patterns-fix-2026> |
-| AI Slop Web Design Guide              | 经验文章   | 2026       | <https://www.925studios.co/blog/ai-slop-web-design-guide>               |
-| Why AI Interfaces Fail Users          | 经验文章   | 2026       | <https://foundey.com/blog/ai-slop-in-ux-design>                         |
+| Source                                                | Type        | Date       | Link                                                                                              |
+| ----------------------------------------------------- | ----------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| Good Dashboard Design vs AI Slop                      | Article     | 2026-10-07 | <https://ssicevs.com/blog/good-dashboard-design-vs-ai-slop>                                       |
+| What is AI slop UI                                    | Terminology | 2026-07-04 | <https://uiscanner.com/blog/what-is-ai-slop-ui>                                                   |
+| Avoid AI Slop (StyleKit)                              | Docs        | 2026-10-31 | <https://www.stylekit.top/en/avoid-ai-slop>                                                       |
+| Escaping AI Slop: 4 Overused Patterns                 | Article     | 2026       | <https://noqta.tn/en/blog/ai-design-slop-overused-ui-patterns-fix-2026>                           |
+| AI Slop Web Design Guide                              | Article     | 2026       | <https://www.925studios.co/blog/ai-slop-web-design-guide>                                         |
+| Why AI Interfaces Fail Users                          | Article     | 2026       | <https://foundey.com/blog/ai-slop-in-ux-design>                                                   |
+| How to Fix AI-Generated UI Designs (BSWEN)            | Article     | 2026-03-20 | <https://docs.bswen.com/blog/2026-03-20-ai-generated-ui-anti-patterns/>                           |
+| Spot the Slop (Kosta Canatselis)                      | Article     | —          | <https://world.hey.com/kostac/spot-the-slop-a-ui-designer-s-guide-to-fixing-ai-defaults-4c448c9c> |
+| 7 Signs a UI Has Been Vibe Coded (Fountain Institute) | Article     | —          | <https://www.thefountaininstitute.com/blog/signs-vibe-coded-ui>                                   |
+| Hacker News: AI-generated pages                       | Discussion  | —          | <https://news.ycombinator.com/item?id=50196368>                                                   |
+| Tufte's principles for graphical integrity            | Article     | —          | <https://chartbuddy.io/blog/tuftes-principles-for-graphical-integrity>                            |
 
-### 组件与工具
+### Components and tooling
 
-| 来源            | 类型       | 链接                            |
+| Source          | Type       | Link                            |
 | --------------- | ---------- | ------------------------------- |
-| coss UI 文档    | 组件库     | <https://coss.com/ui>           |
-| coss particles  | 组件示例   | <https://coss.com/ui/particles> |
-| Base UI         | 无样式原语 | <https://base-ui.com/>          |
-| Tailwind CSS v4 | 样式工具   | <https://tailwindcss.com/>      |
+| coss UI docs    | Library    | <https://coss.com/ui>           |
+| coss particles  | Examples   | <https://coss.com/ui/particles> |
+| Base UI         | Primitives | <https://base-ui.com/>          |
+| Tailwind CSS v4 | Styling    | <https://tailwindcss.com/>      |

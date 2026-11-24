@@ -1,31 +1,29 @@
-# Git 开发流程
+# Git Workflow
 
-**项目**: starter-mygo-react-router | **最后更新**: 2026-11-01
+**Project**: starter-mygo-react-router | **Last updated**: 2026-11-24
 
-## 分支模型
+## Branch model
 
-采用 **Trunk-Based Development**（简化版）：
+Trunk-based development with short-lived branches:
 
 ```
-main ─────●─────●─────●─────●──→ (始终可部署)
+main ─────●─────●─────●─────●──→ always deployable
            \     /
 feat/xxx ──●───●
 ```
 
-| 分支类型     | 命名格式                   | 用途                 | 生命周期   |
-| ------------ | -------------------------- | -------------------- | ---------- |
-| `main`       | —                          | 稳定分支，始终可部署 | 永久       |
-| `feat/*`     | `feat/settings-page`       | 功能开发             | 合并后删除 |
-| `fix/*`      | `fix/theme-flash`          | Bug 修复             | 合并后删除 |
-| `refactor/*` | `refactor/extract-hooks`   | 重构                 | 合并后删除 |
-| `docs/*`     | `docs/adopt-doc-structure` | 文档更新             | 合并后删除 |
-| `test/*`     | `test/add-seo-spec`        | 测试补充             | 合并后删除 |
+| Branch       | Format                     | Purpose            | Lifetime           |
+| ------------ | -------------------------- | ------------------ | ------------------ |
+| `main`       | —                          | Stable, deployable | Permanent          |
+| `feat/*`     | `feat/settings-page`       | Feature work       | Delete after merge |
+| `fix/*`      | `fix/theme-flash`          | Bug fix            | Delete after merge |
+| `refactor/*` | `refactor/extract-hooks`   | Refactor           | Delete after merge |
+| `docs/*`     | `docs/adopt-doc-structure` | Documentation      | Delete after merge |
+| `test/*`     | `test/add-seo-spec`        | Tests              | Delete after merge |
 
-## Commit 规范
+## Commit format
 
-遵循 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/)。
-
-### 格式
+Follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/).
 
 ```
 <type>(<scope>): <description>
@@ -35,109 +33,117 @@ feat/xxx ──●───●
 [optional footer(s)]
 ```
 
-### Type
+| Type       | Purpose                    | Example                                   |
+| ---------- | -------------------------- | ----------------------------------------- |
+| `feat`     | New feature                | `feat(ui): add settings layout`           |
+| `fix`      | Bug fix                    | `fix(theme): persist system preference`   |
+| `refactor` | Behavior-preserving change | `refactor(hooks): extract useMediaQuery`  |
+| `test`     | Tests                      | `test(seo): add generateSEOMeta coverage` |
+| `docs`     | Documentation              | `docs: rewrite documentation in English`  |
+| `style`    | Formatting                 | `style: apply eslint --fix`               |
+| `chore`    | Build or tooling           | `chore(build): add vitest config`         |
+| `perf`     | Performance                | `perf(ui): memoize heavy rows`            |
 
-| Type       | 说明               | 示例                                      |
-| ---------- | ------------------ | ----------------------------------------- |
-| `feat`     | 新功能             | `feat(ui): add settings layout`           |
-| `fix`      | Bug 修复           | `fix(theme): persist system preference`   |
-| `refactor` | 重构（不改变行为） | `refactor(hooks): extract useMediaQuery`  |
-| `test`     | 测试               | `test(seo): add generateSEOMeta coverage` |
-| `docs`     | 文档               | `docs: adopt documentation structure`     |
-| `style`    | 格式化             | `style: apply eslint --fix`               |
-| `chore`    | 构建/工具          | `chore(build): add vitest config`         |
-| `perf`     | 性能优化           | `perf(ui): memoize heavy rows`            |
+Scope is a module or feature name: `ui`, `seo`, `theme`, `routes`, `docs`, `build`, `test`.
 
-### Scope
+Rules:
 
-`scope` 使用模块名或功能名：`ui`、`seo`、`theme`、`routes`、`docs`、`build`、`test` 等。
+- Write the description in imperative English: `add`, `fix`, `remove`.
+- Start lowercase, omit the trailing period, and stay under 72 characters.
+- Mark a breaking change in the footer: `BREAKING CHANGE: description`.
 
-### 规则
+## Commit discipline
 
-- **Description 用英文祈使句**（命令式）：`add`、`fix`、`remove`
-- 首字母小写，不加句号，不超过 72 字符
-- **Breaking change**：footer 中标记 `BREAKING CHANGE: description`
+> Decide the commit message before writing the code.
 
-### Commit 纪律
+1. Pick the Conventional Commit message first.
+2. Keep the diff inside that message's scope. Move out-of-scope work to the next commit.
+3. Split when the diff exceeds 10 files or 200 lines.
+4. Each commit passes verification on its own (`typecheck`, `lint`, `test`).
+5. Keep module creation, feature work, configuration, and documentation in separate commits.
 
-> **先想 commit message，再动工写代码。** 避免「上帝 commit」（一个超大 commit 包含所有变更）。
+## Gates
 
-1. 写代码前先用 Conventional Commit 格式确定 commit message
-2. 围绕这个 message 的范围编写代码，超出范围的工作留给下一个 commit
-3. 当 diff 变大时（>10 文件或 >200 行），主动拆分为多个独立 commit
-4. 每个 commit 应能独立通过验证（`typecheck` + `lint` + `test`）
-5. 模块创建、功能实现、配置修改、文档更新应分开 commit
-
-## 验证门禁
-
-每个 commit / PR 合并前必须通过：
+Every commit and pull request passes:
 
 ```bash
-bun run typecheck     # TypeScript 类型检查
-bun run lint          # ESLint（@antfu/eslint-config）
-bun run build         # 生产构建（react-router build）
-bun run test          # Vitest（见 docs/engineering/code-style.md §测试）
-bun run test:coverage # 覆盖率门禁（app/lib ≥ 55%）
+go build ./... && go vet ./...
+bun run typecheck
+bun run lint
+bun run test
+bun run test:coverage   # app/lib ≥ 55%
+bun run build
 ```
 
-- `lefthook` 在 `postinstall` 自动安装，pre-commit（eslint --fix）+ pre-push（build + test）已配置
-- **禁止 `--no-verify` 跳过钩子**；钩子失败必须修复根因
+Local hooks:
 
-### 验证诚实
+- `pre-commit`: ESLint with `--fix` on staged JavaScript, TypeScript, JSON, and CSS files.
+- `pre-push`: `typecheck`, `lint`, `test`, and `build`. Go checks run in CI, not in the hook.
 
-- 测试必须能失败：故意改坏被测行为，相关测试应变红；否则该测试不构成门禁
-- 不提交 `skip` / `only` / 空 `describe` 或零匹配的空跑作为通过
-- 源码扫描只能做结构检查，不能替代行为断言
-- 不接受「既有红灯」作为基线；已知失败先修或移除
-- 报告门禁时写清命令与结果；未执行的检查标注「未验证」
+CI (`.github/workflows/ci.yml`) runs:
 
-## 代码审查
+- Go job: `go build ./...`, `go vet ./...`, `go test ./...`.
+- Web job: `bun install --frozen-lockfile`, `lint`, `typecheck`, `generate` plus a `git diff` check on `app/mygo.ts`, `test`, and `build:web`.
 
-1. 创建 PR（按 [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) 填写）→ 跑通验证门禁
-2. 至少 1 人 Approve；AI 辅助先进行自动化 Code Review
-3. 审查问题登记进 `docs/planning/backlog.md` 的「审查承接区」
-4. 所有检查通过后 Merge（Create a Merge Commit，保留原子 commit）
-5. Merge 后删除 feature 分支
+The release workflow (`.github/workflows/release.yml`) runs on a `v*` tag. It fails when the tag does not equal `v` plus the `package.json` version, then builds macOS, Windows x64, Windows arm64, Linux x64, and Linux arm64 installers as artifacts. Phone builds (`build:ios`, `build:android`) are not part of it; they need a macOS runner and signing profiles.
 
-### 审查清单
+Do not use `--no-verify` to bypass hooks. Fix the root cause.
 
-- [ ] 代码逻辑正确，覆盖边界情况
-- [ ] 新功能/纯函数有测试；改动无回归
-- [ ] 测试能失败：故意改坏实现时相关测试会变红
-- [ ] 无 `skip` / `only` / 空跑 / 源码扫描冒充行为断言
-- [ ] 遵循 [code-style.md](./code-style.md)
-- [ ] 无硬编码颜色、无 `any`、无 TODO 遗留
-- [ ] 渲染安全：渲染期不读 `window` / `document` / `localStorage`
-- [ ] 导航使用 `<Link>` / `useSubmit()` / `navigate()`（如适用）
-- [ ] 数据获取路径三态覆盖（loading / empty / error）
-- [ ] 无障碍：焦点可见，图标按钮有可访问名称
-- [ ] UI 变更附带截图（浏览器实测）
-- [ ] 相关文档已更新（`docs/`、索引、`CHANGELOG.md`）
-- [ ] 文档与界面文案符合 [writing-style.md](../writing-style.md)
-- [ ] 路径、命令、路由仍能对上代码；无死链
-- [ ] 新 Bug 模式写 postmortem
+### Verification honesty
 
-## 发布流程
+- A test must be able to fail. Break the behavior on purpose and confirm the test turns red.
+- Do not commit `skip`, `only`, empty `describe` blocks, or zero-match runs as passing.
+- A source scan is a structural check, not a behavior assertion.
+- Do not accept an existing red baseline. Fix or remove a known failure.
+- Report the command and the result. Mark checks that did not run as "not verified".
 
-脚手架通过 `mygo build` 打包为桌面应用：前端构建到 `build/client`，安装包输出到 `release/`。
+## Code review
 
-### 常规构建
+1. Open a pull request using [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md), then pass the gates.
+2. Require one approval. Run an automated review first when AI assistance is used.
+3. Log review findings in the review queue of `docs/planning/backlog.md`.
+4. Merge after all checks pass. Keep the atomic commits.
+5. Delete the feature branch.
 
-- `main` 分支推送触发 CI（Go + Web 门禁）
-- 本地用 `bun run build` 验证当前平台安装包
+### Review checklist
 
-### 里程碑发布（按需）
+- [ ] Logic is correct and covers boundary cases.
+- [ ] New behavior and pure functions have tests; no regressions.
+- [ ] Tests can fail: breaking the implementation turns the relevant tests red.
+- [ ] No `skip`, `only`, empty runs, or source scans standing in for behavior assertions.
+- [ ] Follows [code-style.md](./code-style.md).
+- [ ] No hardcoded colors, no `any`, no leftover TODO.
+- [ ] Render safety: no `window`, `document`, or `localStorage` reads during render.
+- [ ] Navigation uses `<Link>`, `useSubmit()`, or `navigate()` where applicable.
+- [ ] Data paths cover loading, empty, and error.
+- [ ] Accessibility: visible focus and accessible names for icon buttons.
+- [ ] UI changes include a screenshot from a browser run.
+- [ ] Documentation is updated (`docs/`, the index, `CHANGELOG.md`).
+- [ ] Documents and UI copy follow [writing-style.md](../writing-style.md).
+- [ ] Paths, commands, and routes still match the code; no dead links.
+- [ ] A new bug pattern has a postmortem.
 
-1. 更新 `CHANGELOG.md`（Unreleased → 版本节）
-2. 按 [release-checklist.md](./release-checklist.md) 跑冒烟清单
-3. 打 Tag：`git tag v0.1.0 && git push --tags`
-4. GitHub Release：`gh release create v0.1.0 --generate-notes`
+## Release
 
-## AI 协作开发
+The starter ships as a desktop app through `mygo build`: the frontend goes to `build/client`, and installers go to `release/`.
 
-- 优先使用 `gh` CLI 进行 GitHub 全流程管理
-- 文档先行：先更新 `docs/planning/backlog.md` 或方案文档，再写代码
-- 验证先行：先写验收标准与可失败的测试，再实现
-- 新功能先写 spike 验证跨系统边界假设（如新库 API 行为先写 5 行 spike 实测）
-- 新 Bug 模式写 postmortem（见 `docs/postmortem/README.md`），预防项同步到本文件或 `AGENTS.md`
-- 文档与界面文案按 [writing-style.md](../writing-style.md) 执行
+- Pushing to `main` triggers CI (Go and web gates).
+- Run `bun run build` locally to verify the installer for the current platform.
+- Set `version` in `package.json`. `mygo.config.ts` imports it, so the app version and the release tag share one source.
+
+Milestone release:
+
+1. Move the `CHANGELOG.md` Unreleased entries into a version section.
+2. Run the smoke tests in [release-checklist.md](./release-checklist.md).
+3. Tag and push: `git tag v0.1.0 && git push --tags`.
+4. Let `.github/workflows/release.yml` build the platform installers.
+5. Create the release from those artifacts: `gh release create v0.1.0 --generate-notes`.
+
+## AI collaboration
+
+- Use the `gh` CLI for the GitHub flow when available.
+- Update the backlog or the relevant plan before writing code.
+- Write acceptance criteria and a test that can fail before implementation.
+- Verify cross-system assumptions with a small spike first, for example a five-line check of a new library API.
+- Write a postmortem for a new bug pattern, then add the preventive rule to this document or `AGENTS.md`.
+- Follow [writing-style.md](../writing-style.md) for documents and UI copy.

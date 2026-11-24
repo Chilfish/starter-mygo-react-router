@@ -1,87 +1,93 @@
-# 系统架构
+# Architecture
 
-> 本文档记录 starter-mygo-react-router 的系统架构总览与关键架构决策（ADR）。
-> fork 本脚手架后，随着真实业务落地逐步补充。
+> System overview and decision records for starter-mygo-react-router. After forking, extend this page as the product takes shape.
 
-## 技术栈
+## Stack
 
-- **宿主**：MyGo 0.7.x（Go 主进程 + 系统 WebView）
-- **框架**：React 19 + React Router v8（框架模式，SPA：`ssr: false`）
-- **样式**：Tailwind CSS v4 + CSS 变量主题系统（`app/app.css`）
-- **组件库**：coss-ui（基于 Base UI 的无障碍组件，shadcn 风格，`app/components/ui/`）
-- **状态管理**：Zustand + localStorage 持久化（`app/stores/`）
-- **构建**：Vite 8；**打包**：`mygo build`（安装包输出到 `release/`）
-- **包管理器**：Bun
+| Layer           | Choice                                                            | Version                          |
+| --------------- | ----------------------------------------------------------------- | -------------------------------- |
+| Host            | [MyGo](https://mygo.egoist.dev/) (Go process plus system WebView) | Go module `v0.10.0`              |
+| Tooling         | `mygo-cli`, `mygo-runtime`                                        | `0.10.x`                         |
+| Go              | Go toolchain                                                      | `1.27.3`                         |
+| UI framework    | React + React Router (framework mode, SPA: `ssr: false`)          | React `19.3`, React Router `8.5` |
+| Styling         | Tailwind CSS v4 plus CSS variable tokens                          | `4.3`                            |
+| Components      | coss on Base UI (`app/components/ui/`)                            | Base UI `1.9`                    |
+| Client state    | Zustand with localStorage persistence                             | `5.1`                            |
+| Build           | Vite; packaging through `mygo build`                              | Vite `8.3`                       |
+| Language        | TypeScript                                                        | `6.0`                            |
+| Package manager | Bun                                                               | —                                |
 
-## 目录结构
+## Directory structure
 
 ```
-main.go         ← MyGo 窗口、绑定与事件
-mygo.config.ts  ← MyGo 构建配置（devUrl / frontendDist / bindings）
-internal/       ← Go 服务（demo：System / Greeter）
+main.go         MyGo window, bindings, and events
+mygo.config.ts  MyGo build configuration (devUrl, frontendDist, bindings, out)
+internal/       Go services (demo: System, Greeter, Searcher)
 app/
   components/
-    ui/         ← coss-ui 组件库（Base UI + cva + cn()）
-    shared/     ← 脚手架自带全局组件（ThemeProvider、ProgressBar、Spinner 等）
-  hooks/        ← 通用 hooks（useHydrated、useMediaQuery、useNonce 等）
-  lib/          ← 纯逻辑层（cn、seo）
-  routes/       ← 路由页面（在 app/routes.ts 集中声明）
-  stores/       ← Zustand stores（appConfig 主题）
-  stories/      ← Storybook story
-  app.css       ← 全局样式 + 设计 Token
-  root.tsx      ← 根布局（Layout / ErrorBoundary / HydrateFallback）
-  mygo.ts       ← `mygo generate` 生成的 Go 绑定
-public/         ← 静态资源（图标、manifest）
+    ui/         coss components (Base UI + cva + cn())
+    shared/     scaffold components (ThemeProvider, ProgressBar, Spinner, demo cards)
+  hooks/        useHydrated, useMediaQuery, useIsMobile, useNonce, useIsPending
+  lib/          pure logic (cn, seo) with colocated *.spec.ts
+  routes/       pages declared in app/routes.ts
+  stores/       Zustand stores (appConfig theme)
+  stories/      Storybook stories
+  app.css       global styles and design tokens
+  root.tsx      layout, ErrorBoundary, HydrateFallback
+  mygo.ts       generated Go bindings (do not edit)
+public/         static assets (icon, manifest)
 ```
 
-## 数据流
+## Data flow
 
-- **Go → 前端**：服务写在 `internal/<name>/`，`main.go` 里 `mygo.Bind`，`bun run generate` 生成 `app/mygo.ts`；React 通过生成的函数调用，宿主能力只在 MyGo 窗口内可用（`isMyGo()`）。
-- **宿主事件**：Go 侧 `mygo.NewEvent` 声明，前端用 `events.<name>.on()` 订阅；`main.go` 的 `tick` 是 demo。
-- **页面数据**：业务落地后在此描述「loader / clientLoader → 序列化 → UI」数据流。当前 SPA 没有服务端 loader。
+- **Go → frontend**: A service lives in `internal/<name>/`. `main.go` binds it with `mygo.Bind`, and `bun run generate` writes typed functions to `app/mygo.ts`. React calls those functions. Host capabilities exist only inside a MyGo window: check `isMyGo()` first.
+- **Cancellable calls**: A method whose first parameter is a `context.Context` is canceled when its page navigates away, closes, or the client aborts it with `.with({ signal })`. The scaffold's `Searcher.Search` shows the pattern.
+- **Host events**: The Go side declares an event with `mygo.NewEvent`. The frontend subscribes with `events.<name>.on()`. `Tick` in `main.go` is the demo.
+- **Page data**: The app is a static SPA, so there is no server loader. Use `clientLoader` and `clientAction` when a route needs data, or call a binding from an effect.
+- **Packaging and phones**: `mygo build` embeds `build/client` into desktop and phone apps from the same Go binary; `mygo dev -platform ios|android` runs the app on a simulator, emulator, or device.
 
-## 关键设计决策
+## Decision records
 
-### ADR-001：设计 Token 与暗色模式
+### ADR-001: Design tokens and dark mode
 
-- **决策**：所有颜色通过 `app/app.css` 的 CSS 变量定义（`--background` 等），经 Tailwind v4 `@theme inline` 映射为 `bg-background` / `text-muted-foreground` 等 Token；暗色模式通过 `<html>` 上的 `.dark` 类切换变量值。
-- **理由**：Token 化避免硬编码色值，`.dark` 变量覆盖实现「暗色一等公民」而无需在每个组件写 `dark:` 前缀。
-- **后果**：禁止硬编码 `bg-[#xxx]`；新增颜色需在 `app/app.css` 的 `:root` 与 `.dark` 两处定义。
+- **Decision**: All colors are CSS variables in `app/app.css` (`--background` and so on), mapped to Tailwind tokens under `@theme inline`. Dark mode switches the variable set through the `.dark` class on `<html>`.
+- **Reason**: Tokens prevent hardcoded colors. Variable overrides make dark mode first-class without a `dark:` prefix on every component.
+- **Consequences**: Hardcoded `bg-[#xxx]` is forbidden. A new color is defined in both `:root` and `.dark`.
 
-### ADR-002：集中式路由配置
+### ADR-002: Central route configuration
 
-- **决策**：路由在 `app/routes.ts` 集中声明（`index` / `route` / `route('*', ...)`），而非文件系统路由。
-- **理由**：脚手架模板面向 fork 后按需增删路由，集中配置比文件约定更显式、可枚举。
-- **后果**：新增路由需同时改 `app/routes.ts` 并跑 `react-router typegen` 刷新 `+types/*`。
+- **Decision**: Routes are declared in `app/routes.ts` with `index`, `route`, and a catch-all, not by file-system convention.
+- **Reason**: The template is forked and edited by hand, so an explicit, enumerable route table is easier to review.
+- **Consequences**: Adding a route changes `app/routes.ts`, then `react-router typegen` refreshes `+types/*` through `bun run typecheck`.
 
-### ADR-003：路径别名 `~/*`
+### ADR-003: Path alias `~/*`
 
-- **决策**：`tsconfig.json` `paths` + Vite `resolve.alias` 将 `~/*` 映射到 `app/*`。
-- **理由**：统一导入路径（`~/components/ui/<name>`），避免深层相对路径。
-- **后果**：新目录一律通过 `~` 别名引用；vitest 配置需镜像该别名（见 `vitest.config.ts`）。
+- **Decision**: `tsconfig.json` `paths` and Vite `resolve.alias` map `~/*` to `app/*`. Vitest mirrors the alias.
+- **Reason**: One import form (`~/components/ui/<name>`) avoids deep relative paths.
+- **Consequences**: New directories are imported through `~`. A new alias must be added to all three configuration files.
 
-### ADR-004：文档单一入口与生命周期
+### ADR-004: Single documentation entry, English prose
 
-- **决策**：`docs/README.md` 作为唯一入口，按任务导航；文档按「需求 → 工程 → 反馈 → 存档」分层；`docs/writing-style.md` 统一文档与界面文案规范。
-- **理由**：模板 fork 后文档容易分叉。单一入口让新增文档有位置、过期文档能归档，避免索引与目录不一致。
-- **后果**：新增、移动、删除文档必须同步索引；正文只写已成立的事实，未完成项放 backlog / `todo-*`；文案评审引用 `writing-style.md`。
+- **Decision**: `docs/README.md` is the only entry point and navigates by task. Documents are layered as requirements → planning → engineering → feedback → archive. All documentation, code comments, UI copy, and commit messages are English.
+- **Reason**: Forked templates drift. One entry point gives new documents a place, lets outdated ones be archived, and keeps the index consistent. A single language avoids half-translated documents and UI.
+- **Consequences**: Adding, moving, or deleting a document updates the index. Main text states only established facts; planned work lives in the backlog. `docs/writing-style.md` governs every copy review.
 
-### ADR-005：验证必须可失败
+### ADR-005: Verification must be able to fail
 
-- **决策**：测试与门禁以「故意改坏被测行为会变红」为验收标准；禁止空跑、全 `skip`、条件断言和源码扫描冒充行为断言。
-- **理由**：全绿只说明没有断言失败，不说明功能被验证。假绿会让后续改动失去信号。
-- **后果**：新功能先写验收标准再实现；审查清单检查测试可失败；覆盖率只统计纯逻辑层 `app/lib/**`。
+- **Decision**: Tests and gates are accepted only when breaking the behavior on purpose turns them red. Empty runs, all-`skip` suites, conditional assertions, and source scans are not accepted as behavior evidence.
+- **Reason**: A green run only means no assertion failed. False green removes the signal from later changes.
+- **Consequences**: Write acceptance criteria and a failing test before implementation. The review checklist verifies that tests can fail. Coverage counts only `app/lib/**`.
 
 ---
 
-## ADR 模板
+## ADR template
 
-新增决策时复制以下结构追加：
+Copy this structure when adding a decision:
 
 ```markdown
-### ADR-00N：{标题}
+### ADR-00N: {Title}
 
-- **决策**：（做了什么选择）
-- **理由**：（为什么，包含被否决的替代方案）
-- **后果**：（正面与反面影响，需跟进的事项）
+- **Decision**: (what was chosen)
+- **Reason**: (why, including rejected alternatives)
+- **Consequences**: (positive and negative effects, follow-up work)
 ```

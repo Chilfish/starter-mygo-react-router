@@ -1,93 +1,93 @@
-# 交互：键盘、导航、状态与 hydration
+# Interaction: Keyboard, Navigation, State, and Hydration
 
-> 本页定义本脚手架的交互约定。组件行为交给 coss / Base UI 原语；这里只写页面层需要统一的部分。
+> Interaction conventions for this scaffold. Component behavior belongs to coss and Base UI primitives; this page covers what pages must do consistently.
 
-## 1. 键盘
+## 1. Keyboard
 
-- `Tab` 顺序与视觉顺序一致；不从 `display: none` 的元素进入焦点。
-- `Enter` / `Space` 激活当前按钮或链接；菜单、选择器、Tabs、Dialog 的方向键与 `Esc` 由 Base UI 原语处理，不重复实现。
-- `Esc` 关闭最上层浮层，焦点回到触发元素。
-- 图标按钮必须有可访问名称；快捷键提示使用 `Kbd` + `Tooltip`。
-- 全局快捷键只在确有高频操作时添加，并在帮助或设置里列出。
-- 自定义快捷键不得覆盖浏览器与输入法的常用组合；输入框聚焦时忽略单字母快捷键。
-- 列表需要键盘移动时，优先使用原语的 roving tabindex 或 `aria-activedescendant`，不要手写焦点循环。
+- Tab order matches visual order. Do not allow focus into `display: none` elements.
+- `Enter` and `Space` activate the focused button or link. Arrow keys and `Esc` inside menus, selects, tabs, and dialogs are handled by Base UI primitives; do not reimplement them.
+- `Esc` closes the topmost overlay and returns focus to the trigger.
+- Icon buttons need an accessible name. Keyboard hints use `Kbd` with `Tooltip`.
+- Add a global shortcut only for a frequent action, and list it in help or settings.
+- Custom shortcuts must not override common browser or input method combinations. Ignore single-letter shortcuts while an input is focused.
+- When a list needs keyboard movement, use the primitive's roving tabindex or `aria-activedescendant`. Do not hand-write a focus loop.
 
-## 2. 导航
+## 2. Navigation
 
 ```tsx
-// 内部跳转
-<Link to="/settings">设置</Link>
+// Internal link
+<Link to="/settings">Settings</Link>
 
-// 提交
+// Submit
 const submit = useSubmit()
 submit(data, { method: 'post' })
 
-// 编程式跳转
+// Programmatic navigation
 const navigate = useNavigate()
 navigate('/settings')
 ```
 
-- 内部导航使用 `<Link>`、`useSubmit()`、`navigate()`；不使用 `<a href="/...">`、`form.submit()`、`window.location.href`。
-- 外部资源下载需要浏览器原生触发时才使用 `<a href>`。
-- 路由切换的全局进度由 `root.tsx` 的 `ProgressBar` 提供；按钮级提交状态使用 `useIsPending()`。
-- 路由级错误由路由模块导出的 `ErrorBoundary` 处理；不要在每个组件里重复捕获同一错误。
-- 滚动位置由 `root.tsx` 的 `ScrollRestoration` 恢复；页面内独立滚动区自行保存位置。
+- Use `<Link>`, `useSubmit()`, and `navigate()` for internal navigation. Do not use `<a href="/...">`, `form.submit()`, or `window.location.href`.
+- A native `<a href>` is allowed only when an external download needs browser handling.
+- The `ProgressBar` in `root.tsx` shows route transitions. Button-level submit state uses `useIsPending()`.
+- Route-level errors are handled by the `ErrorBoundary` exported from the route module. Do not catch the same error again in every component.
+- `ScrollRestoration` in `root.tsx` restores scroll position by pathname. Independent scroll areas save their own position.
 
-## 3. URL 与状态
+## 3. URL and state
 
-| 状态                     | 位置                             | 示例                        |
-| ------------------------ | -------------------------------- | --------------------------- |
-| 筛选、搜索、排序、分页   | URL search params                | `?q=design&sort=new&page=2` |
-| 当前记录、选中项         | URL path 或 search param         | `/items/42`、`?id=42`       |
-| 主题                     | `appConfig` store + localStorage | `light` / `dark` / `system` |
-| 侧栏开合、视图模式、密度 | store 或组件状态                 | 刷新后保留                  |
-| 表单草稿                 | 组件状态；需要跨刷新时再持久化   | 不默认写入 URL              |
+| State                       | Location                                                    | Example                     |
+| --------------------------- | ----------------------------------------------------------- | --------------------------- |
+| Filter, search, sort, page  | URL search params                                           | `?q=design&sort=new&page=2` |
+| Current record, selection   | URL path or search param                                    | `/items/42`, `?id=42`       |
+| Theme                       | `appConfig` store plus localStorage                         | `light`, `dark`, `system`   |
+| Sidebar, view mode, density | Store or component state                                    | Survives reload             |
+| Form draft                  | Component state; persist only when it must survive a reload | Not in the URL by default   |
 
-- 会改变结果集的筛选写入 URL，后退能回到上一次查询。
-- 纯展示偏好不写 URL，避免链接分享时带入他人的视图习惯。
-- 切换筛选时清空与旧结果绑定的选择。
-- 读写 search params 使用 `useSearchParams`；更新时保留无关参数。
-- 持久化 store 改动 schema 时升 `version` 并写迁移；首屏渲染前用 `useHydrated()` 判断客户端是否就绪。
+- Filters that change the result set go into the URL so back navigation returns to the previous query.
+- Display preferences stay out of the URL so shared links do not carry someone else's view.
+- Clear selections tied to the old result set when a filter changes.
+- Read and write search params with `useSearchParams`, keeping unrelated params.
+- When a persisted store schema changes, increase `version` and write a migration. Use `useHydrated()` before the first render that depends on client state.
 
-## 4. 浮层与焦点
+## 4. Overlays and focus
 
-- 同一任务只开一层浮层；需要二段确认时用 `AlertDialog`。
-- 浮层关闭后焦点回到触发元素；Base UI 已处理，不要手动抢焦点。
-- 嵌套浮层保持一层视觉层级；不在 Dialog 里再开 Dialog。
-- 浮层打开时背景保留可辨认的上下文；不要用不透明遮罩完全盖住页面。
-- 破坏性操作需要确认；普通保存不需要二次确认。
-- 长任务使用 Sheet 或独立区域展示进度；关闭后是否继续由业务状态决定。
+- Open one overlay per task. Use `AlertDialog` when a second confirmation is needed.
+- Focus returns to the trigger on close; Base UI handles it, so do not force focus manually.
+- Nested overlays keep one visual layer. Do not open a dialog inside a dialog.
+- Keep the background recognizable while an overlay is open. Do not cover the page with an opaque backdrop.
+- Destructive actions need confirmation; a normal save does not.
+- Long tasks show progress in a sheet or a dedicated area. Whether the task continues after close is a product decision.
 
-## 5. hydration 与宿主
+## 5. Hydration and the host
 
-- 渲染期间不读取 `window`、`document`、`localStorage`、`matchMedia`；放到 `useEffect` 或客户端钩子。
-- 需要判断是否已 hydration 时使用 `useHydrated()`。
-- 主题由 `ThemeProvider` 在客户端应用 `.dark` 类；`<html>` 上的 `suppressHydrationWarning` 只用于这一处。
-- 宿主能力经 `internal/` + `mygo.Bind` 暴露；浏览器预览没有 `window.mygo`，用 `isMyGo()` 判断后再调用绑定。
-- 首屏不渲染 `Date.now()`、随机数、浏览器时区相关文本；需要时改为客户端渲染或固定时区。
-- 图标、字体等资源在 `root.tsx` 的 `links` 中声明；页面级资源放路由的 `links` 导出。
+- During render, do not read `window`, `document`, `localStorage`, or `matchMedia`. Use `useEffect` or a client hook.
+- To know whether the client has hydrated, use `useHydrated()`.
+- `ThemeProvider` applies the `.dark` class on the client. `suppressHydrationWarning` on `<html>` in `root.tsx` covers only this case.
+- Host capabilities are exposed through `internal/` and `mygo.Bind`. A browser preview has no `window.mygo`; check `isMyGo()` before calling a binding.
+- Do not render `Date.now()`, random values, or browser-time-zone text on first paint. Render them on the client or use a fixed time zone.
+- Declare icons and fonts in `root.tsx` `links`. Page-specific resources go in the route's `links` export.
 
-## 6. 响应式与触摸
+## 6. Responsive layout and touch
 
-- 移动端优先：先写基础布局，再用 `sm:` / `md:` / `lg:` 增强。
-- 断点以 Tailwind 为准；从 `~/hooks/use-media-query` 导入时，`useMediaQuery('max-md')` 与 `useIsMobile()` 都按 `<800px` 计算。
-- 交互元素在触屏上提供 `active` 反馈；hover 只作为指针设备的增强，不承载唯一信息。
-- 触控目标不小于 44×44px；按钮组件已通过 `pointer-coarse` 样式保证。
-- 使用 `dvh` 处理移动端浏览器地址栏变化；不要用固定 `100vh` 撑满全屏。
-- 固定底栏与安全区留白使用 `env(safe-area-inset-bottom)`。
-- 横向溢出用 `overflow-x-hidden` 兜底，但先修布局，不用 `overflow` 掩盖问题。
+- Mobile first: write the base layout, then enhance with `sm:`, `md:`, and `lg:`.
+- Breakpoints come from the Tailwind config. `useMediaQuery` and `useIsMobile()` from `~/hooks/use-media-query` use `md` = 800 px, not Tailwind's 768 px. See [README.md § Current conventions](./README.md#current-conventions).
+- Interactive elements give `active` feedback on touch. Hover is a pointer-device enhancement and never the only carrier of information.
+- Touch targets are at least 44×44 px; the button component provides this through `pointer-coarse` styles.
+- Use `dvh` for mobile viewport height. Do not fill the screen with a fixed `100vh`.
+- Fixed bottom bars and safe areas use `env(safe-area-inset-bottom)`.
+- Use `overflow-x-hidden` as a fallback, but fix the layout first. Do not hide problems with `overflow`.
 
-## 7. 动效与偏好
+## 7. Motion and preference
 
-- 过渡 150–350ms；进入淡入 + 轻微位移，退出反向。
-- `prefers-reduced-motion: reduce` 时保留淡入，去掉位移、缩放与循环装饰动画。
-- 加载中的骨架与 Spinner 不受减少动态影响，但避免闪烁。
-- 浮层动画不做弹跳；弹性只用于抽屉与分段指示器。
+- Transitions last 150–350 ms. Entrances fade in with a small offset; exits reverse it.
+- Under `prefers-reduced-motion: reduce`, keep fades and remove movement, scale, and decorative loops.
+- Skeletons and spinners keep working under reduced motion, but avoid flicker.
+- Overlay animation does not bounce. Spring motion is reserved for drawers and segmented indicators.
 
-## 8. 状态恢复
+## 8. State restoration
 
-- 主题：`appConfig` store 持久化，`ThemeProvider` 应用。
-- 路由滚动：`ScrollRestoration` 按 pathname 恢复。
-- 筛选与分页：URL。
-- 侧栏、视图模式：store 或组件状态。
-- 不把同一状态同时写进 URL、store 和组件状态；选一个来源，其余派生。
+- Theme: persisted in the `appConfig` store and applied by `ThemeProvider`.
+- Route scroll: restored by `ScrollRestoration` per pathname.
+- Filters and pagination: the URL.
+- Sidebar and view mode: store or component state.
+- Do not write one state into the URL, the store, and component state at the same time. Pick one source and derive the rest.

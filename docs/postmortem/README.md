@@ -1,101 +1,101 @@
-# 尸检报告索引（Postmortems）
+# Postmortems
 
-> **Blameless 原则**：归因于「什么系统条件允许它发生」，而不是「谁写错了」。
+> **Blameless**: attribute an incident to the system conditions that allowed it, not to a person.
 >
-> **写代码前先读「模板基线雷区」与「高频雷区」自查**，避免复现已有的坑。
+> **Read the baseline and recurring risks below before writing code** to avoid repeating a known failure.
 
-## 严重级别
+## Severity
 
-| 级别  | 判据                                                     |
-| ----- | -------------------------------------------------------- |
-| SEV-0 | 不可逆数据丢失；或生产/构建完全不可用且当天无绕行        |
-| SEV-1 | 用户可见核心功能失效或数据损坏；错误结论被当作事实采用   |
-| SEV-2 | 用户可见功能降级但可绕行；阻塞部分开发流程；中等规模返工 |
-| SEV-3 | 局部或体验层问题，影响可控，但暴露系统性缺口             |
+| Level | Criteria                                                                                           |
+| ----- | -------------------------------------------------------------------------------------------------- |
+| SEV-0 | Irreversible data loss, or the build or product is completely unusable with no same-day workaround |
+| SEV-1 | A core user-visible feature fails or data is corrupted; a wrong conclusion is adopted as fact      |
+| SEV-2 | A user-visible feature degrades with a workaround; part of development is blocked; medium rework   |
+| SEV-3 | Local or experience-level issue with limited impact that still exposes a systemic gap              |
 
-## 状态
+## Status
 
-- **Active**：根因未消除，同类问题仍可能复发。
-- **Mitigated**：具体缺口已消除，且预防已落地或有门禁兜住。
+- **Active**: The root cause remains, so the failure can recur.
+- **Mitigated**: The specific gap is closed and prevention is in place or enforced by a gate.
 
-## 索引
+## Index
 
-| 编号    | 主题     | 级别  | 分类 | 状态   | 根因（一句话） |
-| ------- | -------- | ----- | ---- | ------ | -------------- |
-| （001） | （主题） | SEV-2 | 架构 | Active | （一句话）     |
+| ID  | Topic           | Level | Category | Status | Root cause (one sentence) |
+| --- | --------------- | ----- | -------- | ------ | ------------------------- |
+| —   | No entries yet. | —     | —        | —      | —                         |
 
-> 尚无 postmortem。首次踩坑后按 [TEMPLATE.md](./TEMPLATE.md) 新增，并在此登记。
-> 新增后把教训浓缩到下方「高频雷区」对应类别。
+> There is no postmortem yet. After the first incident, add one from [TEMPLATE.md](./TEMPLATE.md) and register it here.
+> Distill the lesson into the matching category under recurring risks.
 
-## 模板基线雷区（写码前自查）
+## Baseline risks
 
-> 这些是脚手架自带的通用风险，不来自某次事故。踩坑次数从首次实际 postmortem 开始累计。
+> These risks ship with the scaffold. They do not come from an incident. Hit counts start with the first real postmortem.
 
-### 1. React / hydration
+### 1. React and hydration
 
-| 规则                   | 自查点                                                | 对策                                          |
-| ---------------------- | ----------------------------------------------------- | --------------------------------------------- |
-| 渲染期不读浏览器 API   | `window` / `document` / `localStorage` 是否在渲染路径 | 放 effect 或客户端钩子（`useHydrated`）       |
-| persist store 防不一致 | 首屏是否直接读持久化值                                | 用 `_hasHydrated` 模式，hydrate 后再渲染      |
-| 宿主代码不进渲染路径   | `mygo` 绑定是否在渲染期调用                           | 用 `isMyGo()` + effect 判断，浏览器预览不调用 |
-| 首屏输出可复现         | 时间、随机数、`Date.now()` 是否直接渲染               | 固定时区或改成客户端渲染                      |
+| Rule                             | Check                                                          | Fix                                                   |
+| -------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------- |
+| No browser APIs during render    | Is `window`, `document`, or `localStorage` on the render path? | Move it to an effect or a client hook (`useHydrated`) |
+| Persisted stores stay consistent | Does the first render read a persisted value directly?         | Use a hydration flag; render after hydration          |
+| Host code stays out of render    | Are `mygo` bindings called during render?                      | Guard with `isMyGo()` inside an effect                |
+| First output is reproducible     | Are time, random values, or `Date.now()` rendered directly?    | Fix the time zone or render on the client             |
 
-### 2. 状态与数据
+### 2. State and data
 
-| 规则                | 自查点                            | 对策                                        |
-| ------------------- | --------------------------------- | ------------------------------------------- |
-| Zustand 用 selector | 是否 `const { x } = useStore()`   | `useStore(s => s.x)`；多字段用 `useShallow` |
-| persist 迁移显式    | schema 改动是否升 version         | 写迁移，检查 `partialize` 覆盖新字段        |
-| 数据获取三态        | loading / empty / error 是否都有  | Skeleton / Empty / 错误 + 重试              |
-| 空值显式处理        | `null` / `undefined` 是否被当成 0 | 跳过或显示占位，不静默补 0                  |
+| Rule                            | Check                                    | Fix                                                       |
+| ------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
+| Use selectors with Zustand      | Is it `const { x } = useStore()`?        | `useStore(s => s.x)`; use `useShallow` for several fields |
+| Persist migrations are explicit | Does a schema change increase `version`? | Write the migration and check `partialize` for new fields |
+| Data fetching has three states  | Are loading, empty, and error covered?   | Skeleton, empty state, error with retry                   |
+| Null is handled explicitly      | Are `null` and `undefined` treated as 0? | Skip or show a placeholder; never default silently to 0   |
 
-### 3. 样式与 UI
+### 3. Styling and UI
 
-| 规则              | 自查点                                   | 对策                                                  |
-| ----------------- | ---------------------------------------- | ----------------------------------------------------- |
-| 不硬编码颜色      | 是否出现 `#fff` / `rgb()` / `bg-[#...]`  | 用 Token：`bg-background`、`text-muted-foreground` 等 |
-| 不用 `dark:` 补色 | 是否用 `dark:` 覆盖颜色                  | 变量已在 `.dark` 中切换                               |
-| 不靠单行 CSS 补丁 | 是否用 z-index / margin 临时压住布局问题 | 先修布局结构，再动样式                                |
-| 移动端行为单独验  | 是否只按宽度断点验收                     | 触屏、安全区、滚动锁、`dvh` 单独检查                  |
-| 无障碍            | 图标按钮是否有名称、焦点是否可见         | `aria-label` + `focus-visible:ring-2`                 |
+| Rule                       | Check                                           | Fix                                                  |
+| -------------------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| No hardcoded colors        | Any `#fff`, `rgb()`, or `bg-[#...]`?            | Use tokens: `bg-background`, `text-muted-foreground` |
+| No `dark:` color patches   | Is `dark:` used to override a color?            | The `.dark` variable set already switches values     |
+| No single-line CSS patches | Is z-index or margin used to hide a layout bug? | Fix the layout structure first                       |
+| Verify mobile behavior     | Was only the width breakpoint tested?           | Check touch, safe areas, scroll locking, and `dvh`   |
+| Accessibility              | Do icon buttons have names and visible focus?   | `aria-label` plus `focus-visible:ring-2`             |
 
-### 4. 路由与构建
+### 4. Routes and build
 
-| 规则                 | 自查点                        | 对策                                              |
-| -------------------- | ----------------------------- | ------------------------------------------------- |
-| 路由改动跑 typegen   | 新增路由后是否刷新 `+types/*` | 改 `app/routes.ts` 后跑 `bun run typecheck`       |
-| 别名三处同步         | 新别名是否只改了 `tsconfig`   | `tsconfig` + `vite.config` + `vitest.config` 同步 |
-| 依赖跨主版本         | caret 依赖是否跨 major        | 升级后本地 `bun run build`，必要时锁定版本        |
-| hydration / 宿主边界 | 浏览器 API 是否在渲染路径     | 见第 1 节                                         |
+| Rule                            | Check                                                | Fix                                                   |
+| ------------------------------- | ---------------------------------------------------- | ----------------------------------------------------- |
+| Run typegen after route changes | Are `+types/*` files refreshed after adding a route? | Run `bun run typecheck` after editing `app/routes.ts` |
+| Keep aliases in sync            | Was only `tsconfig` updated?                         | Update `tsconfig`, `vite.config`, and `vitest.config` |
+| Check cross-major upgrades      | Does a caret dependency cross a major version?       | Run `bun run build` locally; pin when needed          |
+| Respect the host boundary       | Are browser APIs on the render path?                 | See section 1                                         |
 
-### 5. 验证与流程
+### 5. Verification and process
 
-| 规则             | 自查点                                | 对策                               |
-| ---------------- | ------------------------------------- | ---------------------------------- |
-| 假绿             | 测试是否无断言、空跑或全 `skip`       | 故意改坏行为确认变红；禁止空跑报绿 |
-| 源码扫描冒充断言 | 验收标准是否只 `toContain` 源码字面量 | 关键路径改行为测试，扫描只作辅助   |
-| 计划当现状       | 文档是否把未做写成已完成              | 未完成放 backlog / `todo-*`        |
-| 文档漂移         | 路径、命令、路由是否还能对上代码      | 改代码同步改文档；全局搜旧写法     |
-| 死链             | 索引是否指向不存在的文件              | 合并前逐条打开检查                 |
-| 门禁红灯基线     | 是否带着已知失败合并                  | 先修或移除，不接受「既有红灯」     |
+| Rule                          | Check                                                  | Fix                                                 |
+| ----------------------------- | ------------------------------------------------------ | --------------------------------------------------- |
+| No false green                | Any test without assertions, empty run, or all `skip`? | Break the behavior and confirm red; no empty passes |
+| No source scans as assertions | Does the AC only check a literal in source?            | Use behavior tests; scans are supporting checks     |
+| Plans are not current state   | Do docs present unfinished work as done?               | Put open work in the backlog or `todo-*`            |
+| No documentation drift        | Do paths, commands, and routes still match the code?   | Update docs with the code; search for old forms     |
+| No dead links                 | Does the index point to a missing file?                | Open every link before merging                      |
+| No red baseline               | Is a known failure merged?                             | Fix or remove it; do not accept it                  |
 
-## 高频雷区（来自实际 postmortem）
+## Recurring risks
 
-> 尚无。首次踩坑后按 [TEMPLATE.md](./TEMPLATE.md) 新增，并把教训浓缩到上一节对应类别。
-> 同一规则再次出现时更新踩坑次数，达到阈值就升级为流程或门禁。
+> Empty until the first incident. Add one from [TEMPLATE.md](./TEMPLATE.md), then distill the lesson into the matching category above.
+> When the same rule recurs, update its hit count and promote it to a process rule or a gate.
 
-### 经常出现的根因
+### Common root causes
 
-1. **缺少 spike / 验证**：假设未经独立环境验证
-2. **缺少统一模板 / 清单**：每次遗漏相同的东西
-3. **API 边界不显式**：隐式契约容易被忽略
-4. **验证不携带信号**：全绿只说明没有断言失败
+1. **No spike or verification**: An assumption was never tested in isolation.
+2. **No shared template or checklist**: The same items are missed each time.
+3. **Implicit API boundaries**: Undocumented contracts are easy to ignore.
+4. **Verification without signal**: Green only means no assertion failed.
 
-### 做对了的事
+### What worked
 
-1. **先复现再修**：用可复现命令定位根因
-2. **修条件而非个案**：把预防写回规范或门禁
+1. **Reproduce before fixing**: Locate the root cause with a reproducible command.
+2. **Fix the condition, not the case**: Write prevention back into a rule or gate.
 
-## 如何新增一条 postmortem
+## Adding a postmortem
 
-见 [TEMPLATE.md](./TEMPLATE.md) 底部「如何新增一条 postmortem」流程（复制模板 → 填元信息 → 写章节 → 更新索引 → 浓缩为高频雷区 → 流程级预防同步 `AGENTS.md`）。
+See the process at the end of [TEMPLATE.md](./TEMPLATE.md): copy the template, fill the metadata, write the sections, update the index, distill the recurring risk, and sync process-level prevention to `AGENTS.md`.

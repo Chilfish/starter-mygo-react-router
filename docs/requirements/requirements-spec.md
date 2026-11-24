@@ -1,34 +1,34 @@
-# 需求规格说明（PRD）
+# Requirements Specification
 
-> 本文件为项目需求真相源。fork 本脚手架后，用真实产品信息替换下方各节。
-> 变更时同步更新 `docs/README.md` 索引，并记录变更日期。
+> Source of truth for product requirements. After forking, replace the placeholders with the real product.
+> Update the `docs/README.md` index when this document moves, and record the change date.
 
-## 产品愿景
+## Product scope
 
-（一句话描述产品解决什么问题、为谁服务。）
+(One sentence: what the product does and who uses it.)
 
-## 范围
+## Boundaries
 
-（明确做 / 不做什么，边界。）
+(What is in scope and what is explicitly out of scope.)
 
-## 功能需求
+## Functional requirements
 
-| FR ID              | 优先级   | 描述         | 验收标准             | 状态              | 来源                           |
-| ------------------ | -------- | ------------ | -------------------- | ----------------- | ------------------------------ |
-| `FR-{模块}-{序号}` | P0/P1/P2 | （需求描述） | （可验证的验收标准） | ✅ / 📋 / ⏸️ / ❌ | （需求来源：用户故事/审查/PM） |
+| FR ID                  | Priority | Description   | Acceptance criteria   | Status                            | Source                   |
+| ---------------------- | -------- | ------------- | --------------------- | --------------------------------- | ------------------------ |
+| `FR-{module}-{number}` | P0/P1/P2 | (Requirement) | (Observable behavior) | Done / Planned / Paused / Removed | (User story, review, PM) |
 
-## 非功能需求
+## Non-functional requirements
 
-（性能、安全、可访问性、兼容性、桌面宿主 / SPA 行为等约束。）
+(Performance, security, accessibility, compatibility, desktop host and SPA behavior.)
 
-## 需求溯源
+## Traceability
 
-（功能需求与用户故事 / 审查问题 / postmortem 的对应关系。）
+(Map functional requirements to user stories, review findings, and postmortems.)
 
 ---
 
-## 变更记录
+## Change log
 
-| 日期           | 变更         | 版本 |
-| -------------- | ------------ | ---- |
-| （YYYY-MM-DD） | （变更内容） | v0.1 |
+| Date       | Change   | Version |
+| ---------- | -------- | ------- |
+| YYYY-MM-DD | (Change) | v0.1    |

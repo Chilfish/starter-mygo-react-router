@@ -1,73 +1,71 @@
-# 代码规范
+# Code Style
 
-**项目**: starter-mygo-react-router | **最后更新**: 2026-11-01
+**Project**: starter-mygo-react-router | **Last updated**: 2026-11-24
 
-## TypeScript / React 风格
+## TypeScript and React
 
-### 命名约定
+### Naming
 
-| 类型        | 风格                               | 示例                                     |
-| ----------- | ---------------------------------- | ---------------------------------------- |
-| 组件 / 类   | PascalCase                         | `ProgressBar`、`ThemeProvider`           |
-| 组件文件    | kebab-case                         | `progress-bar.tsx`、`error-boundary.tsx` |
-| hooks       | `use` + camelCase                  | `useHydrated`、`useMediaQuery`           |
-| 函数 / 方法 | camelCase                          | `generateSEOMeta`、`cn`                  |
-| 常量        | UPPER_SNAKE_CASE                   | `SITE_CONFIG`                            |
-| 变量 / 参数 | camelCase                          | `isDark`、`selectedItems`                |
-| 类型 / 接口 | PascalCase                         | `ButtonProps`、`AppConfigs`              |
-| 泛型参数    | 单个大写字母                       | `T`、`K`（约束：`T extends ...`）        |
-| 包 / 目录   | 全小写 + 连字符                    | `app/components/ui/`、`app/lib/`         |
-| 路由文件    | kebab-case（React Router v8 约定） | `not-found.tsx`、`api.auth.ts`           |
+| Kind                | Style                                | Example                                  |
+| ------------------- | ------------------------------------ | ---------------------------------------- |
+| Component, class    | PascalCase                           | `ProgressBar`, `ThemeProvider`           |
+| Component file      | kebab-case                           | `progress-bar.tsx`, `error-boundary.tsx` |
+| Hook                | `use` + camelCase                    | `useHydrated`, `useMediaQuery`           |
+| Function, method    | camelCase                            | `generateSEOMeta`, `cn`                  |
+| Constant            | UPPER_SNAKE_CASE                     | `SITE_CONFIG`                            |
+| Variable, parameter | camelCase                            | `isDark`, `selectedItems`                |
+| Type, interface     | PascalCase                           | `ButtonProps`, `AppConfigs`              |
+| Generic parameter   | Single uppercase letter              | `T`, `K` (`T extends ...`)               |
+| Package, directory  | lowercase with hyphens               | `app/components/ui/`, `app/lib/`         |
+| Route file          | kebab-case (React Router convention) | `not-found.tsx`, `api.auth.ts`           |
 
-### 文件组织
+### File organization
 
 ```ts
-// 1. import：外部依赖 → 路径别名（~/）→ 相对路径
+// 1. imports: external packages, then the ~ alias, then relative paths
 import type * as React from 'react'
 import { useNavigation } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import type { Route } from './+types/home'
 
-// 2. 类型 / 常量
-// 3. 组件 / 函数定义
-// 4. private helpers（放文件底部）
+// 2. types and constants
+// 3. component or function definitions
+// 4. private helpers at the bottom of the file
 ```
 
-### React 约定
+### React rules
 
-- 每个组件签名明确 Props 类型；props 全部显式标注
-- **状态提升到最小合理层级**；跨页共享的状态才用 Zustand
-- 客户端状态用 `useState`；`useEffect` 依赖数组完整；Strict Mode 下行为可预期
-- 数据获取路径实现**三态**（loading skeleton / empty 组件 / error + 重试）
-- 导航用 React Router API：客户端路由 → `<Link>` / `useSubmit()` / `navigate()`；外部资源下载可用 `<a href>`
-- coss-ui 组件基于 Base UI 的 `useRender` + `mergeProps` + cva 变体；新增 UI 组件遵循 `~/components/ui/` 现有模式
-- 事件回调命名 `onXxx`：`onSelect`、`onDelete`
+- Give every component an explicit props type and annotate all props.
+- Lift state to the smallest level that needs it. Use Zustand only for state shared across pages.
+- Use `useState` for client state. Keep `useEffect` dependency arrays complete.
+- A data path covers three states: loading skeleton, empty component, and error with retry.
+- Navigate with React Router APIs: `<Link>`, `useSubmit()`, or `navigate()`. A native `<a href>` is allowed only for external downloads.
+- New coss components follow the existing pattern: Base UI `useRender` + `mergeProps` + cva variants + `cn()`.
+- Name event callbacks `onXxx`: `onSelect`, `onDelete`.
 
-### 禁止事项
+### Forbidden
 
-| 禁止                                                | 替代方案                                                      |
-| --------------------------------------------------- | ------------------------------------------------------------- |
-| `any`（含隐式）                                     | 明确类型 / `unknown` + 收窄                                   |
-| 组件内 `window.location.href` / `location.reload()` | `useLocation()` / `useRevalidator()`                          |
-| 硬编码颜色                                          | CSS 变量 Token（`bg-background`、`text-muted-foreground` 等） |
-| `window` / `document` 在渲染期间读取                | 仅在 effect / 客户端钩子中读取                                |
-| wildcard import                                     | 显式 import                                                   |
-| `console.log` 遗留                                  | 移除或用 lint 拦截                                            |
+| Forbidden                                                   | Use instead                                                        |
+| ----------------------------------------------------------- | ------------------------------------------------------------------ |
+| `any`, including implicit `any`                             | A concrete type, or `unknown` plus narrowing                       |
+| `window.location.href` or `location.reload()` in components | `useLocation()` or `useRevalidator()`                              |
+| Hardcoded colors                                            | Design tokens: `bg-background`, `text-muted-foreground`, and so on |
+| Reading `window` or `document` during render                | Effects or client-only hooks                                       |
+| Wildcard imports                                            | Explicit imports                                                   |
+| Debug `console.log` left in the diff                        | Remove it. ESLint does not block it (`no-console` is off).         |
 
-## Tailwind / UI 约定
+## Tailwind and UI
 
-- 所有颜色使用 CSS 变量 Token，禁止硬编码 hex（见 [docs/ui-design/visual.md](../ui-design/visual.md)）
-- Dark Mode 是一等公民，所有组件必须兼容
-- 优先复用 `~/components/ui/` 下已有组件（coss-ui）
-- 移动端优先，再用 `sm:` / `md:` / `lg:` 增强
-- 交互过渡动画 150-350ms
+- All colors come from CSS variables defined in `app/app.css`. Hex values and `rgb()` calls are forbidden in components. See [ui-design/visual.md](../ui-design/visual.md).
+- Dark mode is first-class. Every component works in both themes through the `.dark` variable set.
+- Reuse `~/components/ui/` before writing markup.
+- Write mobile-first, then enhance with `sm:`, `md:`, and `lg:`.
+- Keep interaction transitions between 150 and 350 ms.
 
-## 测试规范
+## Testing
 
-对标「测试先行 + 覆盖率门禁」：
-
-### 命名
+### Naming
 
 `methodName_condition_expectedResult()`
 
@@ -77,58 +75,62 @@ describe('generateSEOMeta', () => {
 })
 ```
 
-### 结构
+### Structure
 
-Given-When-Then：
+Given-When-Then:
 
 ```ts
 it('generateTitle_withPageTitle_appendsSiteName', () => {
   // Given
-  const pageTitle = '首页'
+  const pageTitle = 'Home'
   // When
   const result = generateTitle(pageTitle)
   // Then
-  expect(result).toBe(`首页 — ${siteConfig.name}`)
+  expect(result).toBe(`Home — ${siteConfig.name}`)
 })
 ```
 
-### 规则
+### Rules
 
-- **纯函数优先**：`app/lib/` 的纯函数（seo、utils、env 等）独立可测，零 mock 成本
-- **Fakes over Mocks**：数据层测试用真实实现 / 轻量 fake，避免 mock 语义漂移
-- 测试文件与源码同目录：`*.spec.ts`（配置见 `vitest.config.ts`）
+- Prefer pure functions. Files in `app/lib/` are testable without mocks.
+- Use fakes over mocks. Data-layer tests use real implementations or lightweight fakes.
+- Colocate test files with the source: `*.spec.ts`. Configuration is in `vitest.config.ts`.
+- The test environment is `node`; tests include `app/**/*.spec.ts`.
 
-### 门禁
+### Coverage
 
 ```bash
-bun run test          # Vitest
-bun run test:coverage # 覆盖率报告（阈值见 vitest.config.ts）
+bun run test
+bun run test:coverage
 ```
 
-覆盖率门禁范围 = 纯逻辑层（`app/lib/`）；UI 组件与路由不计入（文件级覆盖率统计文件而非函数，混入 UI 会失真）。
+Coverage covers `app/lib/**/*.ts` and excludes `*.spec.ts` and `app/lib/env.server.ts`. All four thresholds (lines, functions, statements, branches) are 55%.
 
-## 验证与诚实
+UI components and routes are outside the coverage gate. File-level coverage mixed with UI code produces misleading numbers.
 
-测试的价值在于能失败。全绿只说明没有断言失败，不说明行为被验证。
+## Verification and honesty
 
-- **先红后绿**：新增断言前先确认它在错误实现下会失败；改门禁前故意改坏被测行为，确认会变红。
-- **每条 `it` 至少一条断言**：禁止空 `describe`、全 `skip`、`only` 和条件断言冒充通过。
-- **行为断言优先**：源码扫描（`toContain('字面量')`）只能作结构检查，不能写进验收标准的 Pass 条件。
-- **门禁不接受红灯基线**：已知失败先修或移除，不允许带着已知失败合并。
-- **报告要如实**：写清跑了什么命令、通过还是失败、哪些没跑及原因。不确定写「未验证」。
+Tests only carry signal if they can fail. A green run means no assertion failed, not that the behavior works.
 
-## 文档与文案
+- **Red first, then green**: Confirm a new assertion fails against a wrong implementation before it passes.
+- **Every `it` has at least one assertion**: No empty `describe` blocks, all-`skip` suites, `only`, or conditional assertions presented as passing.
+- **Behavior first**: A source scan (`expect(source).toContain('literal')`) is a structural check, not evidence of behavior.
+- **No red baseline**: Fix or remove a known failing check before merging.
+- **Report honestly**: State which commands ran, whether they passed, and what did not run. Write "not verified" when unsure.
 
-- 用户可见文案遵循 [docs/writing-style.md](../writing-style.md)
-- 空状态说清「是什么、为什么空、下一步」；错误提示给可执行动作
-- 文档中的路径、命令、路由、字段名必须与代码一致；改代码时同步更新文档
+## Documentation and copy
 
-## Lint / 类型检查
+- User-facing copy follows [writing-style.md](../writing-style.md).
+- Empty states answer what this is, why it is empty, and what to do next. Errors give an executable next step.
+- Paths, commands, routes, and field names in docs must match the code. Update docs in the same change.
+
+## Lint and typecheck
 
 ```bash
-bun run lint          # ESLint（@antfu/eslint-config，含 --fix）
+bun run lint          # eslint . --max-warnings=0
+bun run lint:fix      # eslint . --fix
 bun run typecheck     # react-router typegen && tsc
 ```
 
-- 禁止 `--no-verify` 跳过 lefthook 钩子
-- 无 `TODO()` 遗留（用 `FIXME` + 建 Issue）
+- Do not skip lefthook hooks with `--no-verify`.
+- Leave no `TODO()`. Use `FIXME` with a tracked issue.

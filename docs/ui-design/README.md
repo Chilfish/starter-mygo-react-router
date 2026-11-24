@@ -1,62 +1,64 @@
-# UI 设计系统
+# UI Design System
 
-> 本目录是界面规范的入口：设计 Token、页面结构、三态反馈、交互规则与取舍依据。
-> 适用范围：`app/` 下的页面、组件与样式。新增页面或组件前先读本页，再按下表进入对应文档。
+> Entry point for interface rules: design tokens, page structure, state feedback, interaction, and information density.
+> Scope: pages, components, and styles under `app/`. Read this page before adding a page or component, then open the document for the task.
 
-## 1. 文档地图
+## Document map
 
-| 文档                               | 内容                                                       | 何时读                       |
-| ---------------------------------- | ---------------------------------------------------------- | ---------------------------- |
-| [visual.md](./visual.md)           | 颜色、字体、间距、圆角、动效、组件映射                     | 写样式、定 Token、评审视觉   |
-| [GENERAL.md](./GENERAL.md)         | Button、Input、Card、Dialog 等原子组件的用法与反例         | 使用 `~/components/ui/` 组件 |
-| [patterns.md](./patterns.md)       | 信息预算、页面骨架、页面类型、工具栏、列表、三态、检查清单 | 新增页面、拆组件             |
-| [feedback.md](./feedback.md)       | 空、加载、错误、浮层、Toast 与提示文案                     | 接数据、写状态与提示         |
-| [interaction.md](./interaction.md) | 键盘、导航、URL 状态、持久化、SSR 与触摸                   | 写交互与状态                 |
-| [research.md](./research.md)       | 规范与研究来源、正反例、采纳取舍                           | 评审规则或引入新做法         |
+| Document                                           | Contents                                                       | Read when                            |
+| -------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------ |
+| [visual.md](./visual.md)                           | Color, type, spacing, radius, elevation, motion, component map | Styling, tokens, visual review       |
+| [patterns.md](./patterns.md)                       | Information budget, page skeleton, page types, toolbars, lists | Adding a page, splitting a component |
+| [information-density.md](./information-density.md) | What to cut, budgets, overstuffed-page signals, review tests   | Reviewing a dense screen             |
+| [feedback.md](./feedback.md)                       | Empty, loading, error, overlays, toasts, copy patterns         | Wiring data and states               |
+| [interaction.md](./interaction.md)                 | Keyboard, navigation, URL state, persistence, hydration, touch | Interaction and state                |
+| [GENERAL.md](./GENERAL.md)                         | Button, Input, Card, Dialog, Toast, and icon usage             | Using `~/components/ui/`             |
+| [research.md](./research.md)                       | Sources, adopted rules, trade-offs, review method              | Changing a rule or adding a pattern  |
 
-本目录只放可复用的规范，不记录具体页面的实现进度、截图或按日期的改造日志。页面进度写进
-[docs/planning/backlog.md](../planning/backlog.md)，实现记录写进
-[docs/development-log/](../development-log/)。
+This directory holds reusable rules only. Page progress belongs in [planning/backlog.md](../planning/backlog.md); implementation notes belong in [development-log/](../development-log/).
 
-## 2. 设计立场
+## Design stance
 
-1. **先给答案**：首屏先说明当前状态与下一步，明细放进二级区域。
-2. **层级来自取舍**：每个视图保留一个主操作和一组主数字，其余动作降级。
-3. **表面从简**：页面用留白与分隔线分组；卡片只承载独立对象，卡片内不再套卡片。
-4. **Token 是颜色来源**：颜色与圆角来自 `app/app.css`；组件里不写一次性 hex 或 `rgb()`。遮罩与阴影使用 `black` / `white` 透明度是有限例外。
-5. **移动端优先**：先写基础布局，再用 `sm:` / `md:` / `lg:` 增强；触控目标不小于 44px。
-6. **原语优先**：交互使用 `~/components/ui/` 的 coss / Base UI 组件，Tailwind 负责布局。
-7. **状态如实**：加载、空、失败各自成态；`0` 只在真实为零时出现。
-8. **文档即事实**：路径、组件名、Token 以当前代码为准；改代码时同步改文档。
+1. **Answer first**: The first screen states the current status and the next action. Details go into a secondary area.
+2. **Hierarchy comes from choices**: Each view keeps one primary action and one set of key numbers. Everything else is demoted.
+3. **Keep surfaces simple**: Use whitespace and dividers to group. A card holds one independent object; never nest cards.
+4. **Tokens are the only color source**: Colors and radii come from `app/app.css`. Components contain no one-off hex or `rgb()`. Overlays and shadows may use `black` or `white` with opacity.
+5. **Mobile first**: Write the base layout, then enhance with `sm:`, `md:`, and `lg:`. Touch targets are at least 44 px.
+6. **Primitives first**: Interaction uses `~/components/ui/` (coss on Base UI). Tailwind handles layout.
+7. **States are explicit**: Loading, empty, and error are separate states. `0` appears only when the value is really zero.
+8. **Docs are facts**: Paths, component names, and tokens match the current code. Update docs with the code.
 
-## 3. AI 生成 UI 前自检
+## Pre-generation checklist
 
-- [ ] 先查 `~/components/ui/` 是否已有组件，再写新结构。
-- [ ] 颜色只用 Token：`bg-background`、`text-muted-foreground`、`border-input`；没有 `#fff` 或 `bg-[#...]`。
-- [ ] 浅色与深色同时成立；不在组件里用 `dark:` 覆盖颜色。
-- [ ] 交互元素有 hover（指针设备）、active（触屏）与 `focus-visible` 状态。
-- [ ] 数据路径覆盖 loading / empty / error。
-- [ ] 内部导航用 `<Link>`，提交用 `useSubmit()`，跳转用 `navigate()`。
-- [ ] 类名用 `cn()` 合并，不手工拼接条件字符串。
-- [ ] 图标按钮有 `aria-label`，装饰图标标 `aria-hidden`。
-- [ ] 新路由写进 `app/routes.ts`，并跑 `bun run typecheck` 刷新 `+types/*`。
+- [ ] Check `~/components/ui/` for an existing component before writing new markup.
+- [ ] Use tokens only: `bg-background`, `text-muted-foreground`, `border-input`. No `#fff` or `bg-[#...]`.
+- [ ] Light and dark both hold. Do not override colors with `dark:` in components.
+- [ ] Interactive elements have hover (pointer), active (touch), and `focus-visible` states.
+- [ ] Data paths cover loading, empty, and error.
+- [ ] Internal navigation uses `<Link>`; submissions use `useSubmit()`; redirects use `navigate()`.
+- [ ] Class names are merged with `cn()`, not concatenated by hand.
+- [ ] Icon buttons have `aria-label`; decorative icons use `aria-hidden`.
+- [ ] New routes are registered in `app/routes.ts`, then `bun run typecheck` refreshes `+types/*`.
 
-## 4. 当前约定
+## Current conventions
 
-| 项       | 结论                                                                          |
-| -------- | ----------------------------------------------------------------------------- |
-| 技术栈   | React 19 + React Router v8 SPA + Tailwind CSS v4 + coss / Base UI + MyGo 宿主 |
-| 主题     | `.dark` 类 + CSS 变量；浅色 / 深色 / 跟随系统由 `appConfig` store 持久化      |
-| 字体     | `Inter`；等宽 `Geist Mono`；中文由系统 `sans-serif` 回退（见 `app/app.css`）  |
-| 主色     | `rgb(29, 155, 240)`                                                           |
-| 圆角基准 | `--radius: 0.625rem`（10px）                                                  |
-| 断点     | Tailwind 默认断点；`useMediaQuery('max-md')` 按 800px 计算                    |
-| 布局     | 移动端单列；`md` 以上可加侧栏或双栏；详情在窄屏改为整页                       |
-| 反馈     | `Empty` / `Skeleton` / `Spinner` / `Alert` / `toastManager`                   |
-| 浮层     | `Dialog` / `AlertDialog` / `Sheet` / `Drawer` / `Popover` / `Menu`            |
+| Item        | Value                                                                                                |
+| ----------- | ---------------------------------------------------------------------------------------------------- |
+| Stack       | React 19 + React Router v8 SPA + Tailwind CSS v4 + coss / Base UI, hosted by MyGo                    |
+| Theme       | `.dark` class plus CSS variables; light, dark, and system modes persist through `appConfig`          |
+| Fonts       | `Inter` (`--font-sans`, `--font-heading`); `Geist Mono` (`--font-mono`)                              |
+| Primary     | `rgb(29, 155, 240)`                                                                                  |
+| Radius      | `--radius: 0.625rem` (10 px)                                                                         |
+| Breakpoints | Tailwind defaults for CSS; `useMediaQuery` uses `sm` 640, `md` 800, `lg` 1024, `xl` 1280, `2xl` 1536 |
+| Mobile hook | `useIsMobile()` from `~/hooks/use-media-query` (< 800 px). `app/hooks/use-mobile.ts` is unused.      |
+| Layout      | Single column on mobile; sidebar or two columns from `md`; a narrow detail view becomes a full page  |
+| Feedback    | `Empty`, `Skeleton`, `Spinner`, `Alert`, `toastManager`                                              |
+| Overlays    | `Dialog`, `AlertDialog`, `Sheet`, `Drawer`, `Popover`, `DropdownMenu`                                |
 
-## 5. 维护
+Note: Tailwind's default `md` is 768 px, while `useMediaQuery('md')` switches at 800 px. A `md:` class and a `useMediaQuery` check do not change at the same width.
 
-- 新增、移动或删除文档时同步更新本页与 [docs/README.md](../README.md)。
-- 规则变化先改文档，再改代码；模板仓库不保留一次性的页面方案与改造记录。
-- 评审按 [research.md §5](./research.md#5-评审方法) 的检查顺序执行。
+## Maintenance
+
+- Update this page and [docs/README.md](../README.md) when a document is added, moved, or removed.
+- Change the document before changing the code. The template keeps no one-off page plans or dated redesign logs.
+- Review in the order listed in [research.md § Review method](./research.md#review-method).

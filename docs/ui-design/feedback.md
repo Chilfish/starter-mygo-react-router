@@ -1,14 +1,14 @@
-# 空、加载、错误与反馈
+# Empty, Loading, Error, and Feedback
 
-> 三态与反馈的统一规则。新增页面时按本文选择组件与文案结构；页面骨架见 [patterns.md](./patterns.md)，组件 API 见 [GENERAL.md](./GENERAL.md)。
+> Shared rules for states and feedback. Choose components and copy from this page when adding a page. Page structure is in [patterns.md](./patterns.md); component APIs are in [GENERAL.md](./GENERAL.md).
 
-## 1. 空状态
+## 1. Empty states
 
-空状态回答三件事：
+An empty state answers three questions:
 
-1. 这里是什么；
-2. 为什么现在是空的；
-3. 下一步做什么。
+1. What is this area?
+2. Why is it empty now?
+3. What is the next step?
 
 ```tsx
 import { InboxIcon } from 'lucide-react'
@@ -27,130 +27,130 @@ import {
     <EmptyMedia variant="icon">
       <InboxIcon aria-hidden="true" />
     </EmptyMedia>
-    <EmptyTitle>还没有记录</EmptyTitle>
-    <EmptyDescription>创建第一条后，记录会显示在这里。</EmptyDescription>
+    <EmptyTitle>No records yet</EmptyTitle>
+    <EmptyDescription>The first record will appear here.</EmptyDescription>
   </EmptyHeader>
   <EmptyContent>
-    <Button>新建记录</Button>
+    <Button>New record</Button>
   </EmptyContent>
 </Empty>
 ```
 
-| 场景       | 标题               | 说明                               | 动作       |
-| ---------- | ------------------ | ---------------------------------- | ---------- |
-| 首次使用   | 还没有记录         | 创建第一条后，记录会显示在这里     | 新建记录   |
-| 筛选无结果 | 这个筛选下没有记录 | 清除筛选可以查看全部记录           | 清除筛选   |
-| 搜索无结果 | 没有找到「关键词」 | 减少限定词或换一个关键词更容易命中 | 清除搜索   |
-| 无权限     | 没有访问权限       | 换一个有权限的账号，或联系管理员   | 返回上一页 |
-| 功能未启用 | 这个功能还没有开启 | 在设置中开启后，这里会显示内容     | 打开设置   |
+| Case                | Title                        | Description                                                           | Action        |
+| ------------------- | ---------------------------- | --------------------------------------------------------------------- | ------------- |
+| First use           | No records yet               | The first record will appear here.                                    | New record    |
+| Filtered to nothing | No records match this filter | Clear the filter to see all records.                                  | Clear filters |
+| Search with no hits | No results for "keyword"     | Use fewer words or a different keyword.                               | Clear search  |
+| No permission       | No access                    | Sign in with an account that has access, or contact an administrator. | Go back       |
+| Feature disabled    | This feature is turned off   | Turn it on in settings and content will appear here.                  | Open settings |
 
-- 文案写事实，不写道歉与抒情句。
-- 空状态与数据状态对应：未登录引导登录，无数据引导创建，筛选无结果提供清除。
-- 紧凑区域可省略 `EmptyMedia`，保留标题、说明与一个动作。
-- 空状态不摆假数据、占位卡片或灰色骨架。
+- State facts. Do not apologize or write emotional copy.
+- Match the empty state to the cause: no session means sign in, no data means create, no filter match means clear.
+- Small areas may omit `EmptyMedia` and keep the title, description, and one action.
+- Do not fill an empty state with fake data, placeholder cards, or gray skeletons.
 
-## 2. 加载
+## 2. Loading
 
-| 场景            | 形态                              |
-| --------------- | --------------------------------- |
-| 列表首屏        | 多行 `Skeleton`，数量接近可见行数 |
-| 网格首屏        | 图块形状的 `Skeleton`             |
-| 翻页            | 列表尾部 `Spinner` +「正在加载」  |
-| 按钮动作        | `<Button loading>`，保留按钮宽度  |
-| 路由切换        | `root.tsx` 的 `ProgressBar`       |
-| 超过 1 秒的任务 | `Progress` 或进度文字             |
-| 图标加载        | 行内小 `Spinner`，不改变布局      |
+| Case                 | Form                                                 |
+| -------------------- | ---------------------------------------------------- |
+| First list paint     | Several `Skeleton` rows, close to the visible count  |
+| First grid paint     | `Skeleton` blocks shaped like the tiles              |
+| Paging               | `Spinner` and "Loading" at the end of the list       |
+| Button action        | `<Button loading>`, keeping the button width         |
+| Route transition     | `ProgressBar` in `root.tsx`                          |
+| Work over one second | `Progress` or a progress label                       |
+| Icon loading         | A small inline `Spinner` that does not change layout |
 
 ```tsx
-// 首屏骨架
+// First paint
 <div className="space-y-3">
   {Array.from({ length: 6 }, (_, index) => (
     <Skeleton key={index} className="h-16 w-full" />
   ))}
 </div>
 
-// 按钮加载
-<Button loading>保存中</Button>
+// Button loading
+<Button loading>Saving</Button>
 ```
 
-- 骨架数量接近首屏可见数量，减少加载后的跳动。
-- 长任务显示已处理数量与总量，例如「已处理 1,204 / 3,000」。
-- 不要让整个页面只剩一个居中 Spinner；保留页面标题与工具栏，内容区单独显示加载态。
-- 加载超过 1 秒时给文字说明；超过 5 秒时提供取消或重试入口。
+- Match the skeleton count to the visible rows to reduce layout shift.
+- Long tasks show processed and total counts, for example "1,204 of 3,000 processed".
+- Do not replace the whole page with a centered spinner. Keep the title and toolbar and show loading in the content area.
+- Add a text label after one second. After five seconds, offer cancel or retry.
 
-## 3. 错误
+## 3. Errors
 
-错误分三层：
+Errors have three levels:
 
-| 层级   | 位置               | 组件                                              |
-| ------ | ------------------ | ------------------------------------------------- |
-| 路由级 | 整个页面           | 路由模块导出 `ErrorBoundary`，使用 `ErrorDisplay` |
-| 区块级 | 内容区顶部或区块内 | `Alert variant="error"` + 重试按钮                |
-| 字段级 | 表单字段下方       | `FieldError`                                      |
+| Level | Location                                    | Component                                                           |
+| ----- | ------------------------------------------- | ------------------------------------------------------------------- |
+| Route | Whole page                                  | Export `ErrorBoundary` from the route module; render `ErrorDisplay` |
+| Block | Top of the content area or inside the block | `Alert variant="error"` plus a retry button                         |
+| Field | Below the form field                        | `FieldError`                                                        |
 
 ```tsx
 <Alert variant="error">
   <AlertCircleIcon aria-hidden="true" />
-  <AlertTitle>加载失败</AlertTitle>
+  <AlertTitle>Could not load</AlertTitle>
   <AlertDescription>
-    网络请求没有完成。检查网络后重试。
-    <Button variant="link" onClick={retry}>重试</Button>
+    The request did not finish. Check the connection and retry.
+    <Button variant="link" onClick={retry}>Retry</Button>
   </AlertDescription>
 </Alert>
 ```
 
-- 界面展示「发生了什么 + 下一步」；堆栈、错误码、响应体只进日志。
-- 错误尽量行内展示，保留页面其它部分可用。
-- 已加载的内容在重试期间继续保留，不用空白替换。
-- 表单错误贴近字段，提交失败在表单顶部汇总一条。
-- 不把 `0` 当作加载失败或空值；失败显示失败，空显示空。
-- 错误文案给可执行动作：重试、检查配置、重新登录、返回列表、复制诊断信息。
+- The interface shows what happened and the next action. Stacks, error codes, and response bodies go to the log.
+- Show errors inline where possible so the rest of the page stays usable.
+- Keep already loaded content during a retry instead of replacing it with an empty area.
+- Form errors sit beside the field. A submit failure adds one summary at the top of the form.
+- Do not treat `0` as a failed load or a missing value. Failure shows failure; empty shows empty.
+- Error copy offers an action: retry, check configuration, sign in again, go back to the list, copy diagnostics.
 
-## 4. 浮层
+## 4. Overlays
 
-| 形态           | 用途                           | 组件                                             |
-| -------------- | ------------------------------ | ------------------------------------------------ |
-| `Dialog`       | 需要集中注意的任务、详情、预览 | `Dialog` + `DialogPopup`（别名 `DialogContent`） |
-| `AlertDialog`  | 不可逆或高风险确认             | `AlertDialog` + `AlertDialogPopup`               |
-| `Sheet`        | 自包含任务、筛选、批量操作     | `Sheet` + `SheetPopup`（默认右侧）               |
-| `Drawer`       | 移动端底部面板、手势关闭       | `Drawer` + `DrawerPopup`（`position="bottom"`）  |
-| `Popover`      | 轻量筛选、日期、补充信息       | `Popover`                                        |
-| `DropdownMenu` | 低频动作、溢出菜单             | `DropdownMenu`                                   |
-| `ContextMenu`  | 行或卡片的右键动作             | `ContextMenu`                                    |
-| `Command`      | 命令面板、快速跳转             | `Command`                                        |
+| Form           | Use                                         | Component                                        |
+| -------------- | ------------------------------------------- | ------------------------------------------------ |
+| `Dialog`       | A task, detail, or preview that needs focus | `Dialog` + `DialogPopup` (alias `DialogContent`) |
+| `AlertDialog`  | Irreversible or high-risk confirmation      | `AlertDialog` + `AlertDialogPopup`               |
+| `Sheet`        | Self-contained task, filters, batch actions | `Sheet` + `SheetPopup` (right by default)        |
+| `Drawer`       | Mobile bottom panel, gesture dismissal      | `Drawer` + `DrawerPopup` (`position="bottom"`)   |
+| `Popover`      | Light filters, dates, supplementary detail  | `Popover`                                        |
+| `DropdownMenu` | Low-frequency and overflow actions          | `DropdownMenu`                                   |
+| `ContextMenu`  | Row or card right-click actions             | `ContextMenu`                                    |
+| `Command`      | Command palette, quick navigation           | `Command`                                        |
 
-- `Dialog` / `AlertDialog` 默认在移动端贴底（`bottomStickOnMobile`），需要居中时传 `bottomStickOnMobile={false}`。
-- `Sheet` 默认从右侧进入；窄屏可改为 `side="bottom"`。它不会按宽度自动切换。
-- 同一任务只开一层浮层；需要二段确认时用 `AlertDialog`。
-- 浮层关闭后焦点回到触发按钮。
-- 浮层内保留清晰的标题、说明与关闭方式；不要只靠 `Esc`。
-- 破坏性操作的主按钮使用 `destructive`，取消使用 `ghost` 或 `outline`。
+- `Dialog` and `AlertDialog` stick to the bottom on mobile (`bottomStickOnMobile`). Pass `bottomStickOnMobile={false}` to center them.
+- `Sheet` enters from the right. On narrow screens pass `side="bottom"`. It does not switch by width automatically.
+- Open one overlay per task. Use `AlertDialog` when a second confirmation is needed.
+- Focus returns to the trigger when an overlay closes.
+- Keep a clear title, description, and close affordance inside the overlay. Do not rely on `Esc` alone.
+- Destructive actions use a `destructive` primary button; cancel uses `ghost` or `outline`.
 
-## 5. 成功与提示
+## 5. Success and notifications
 
-- 保存、复制、导出完成用 Toast：`toastManager.add({ title: '已保存', type: 'success' })`。
-- 需要持续可见的状态用行内 `Alert`、`Badge` 或状态文字，不用 Toast。
-- 一次性说明放在操作位置附近，并随操作消失。
-- 提示文案包含数量与单位：「已导出 1,204 个文件」。
-- 同一事件不重复提示；页面已有状态时不再叠一条 Toast。
+- Use a toast for completed saves, copies, and exports: `toastManager.add({ title: 'Saved', type: 'success' })`.
+- For persistent status use an inline `Alert`, `Badge`, or status text, not a toast.
+- Put one-off notes next to the action and remove them with the action.
+- Include counts and units: "Exported 1,204 files".
+- Never notify twice for one event. If the page already shows the state, do not add a toast.
 
-## 6. 文案规则
+## 6. Copy rules
 
-- 按钮与标签使用动词或名词短语：`保存设置`、`清除筛选`、`开始同步`。
-- 数字带单位：`1,891 条`、`29,010 项`、`1.6 GB`、`150 ms`。
-- 时间写清时区或格式；相对时间只在 7 天内使用。
-- 一个数字只配一条说明。
-- 空状态、错误、确认文案按 [writing-style.md](../writing-style.md) 执行。
-- 不写「暂无数据」「出错了」了事；补充原因与下一步。
+- Buttons and labels use a verb or a noun phrase: `Save settings`, `Clear filters`, `Start sync`.
+- Numbers carry units: `1,891 records`, `29,010 items`, `1.6 GB`, `150 ms`.
+- Time states the format or time zone; relative time is used only within seven days.
+- One number gets one note.
+- Empty, error, and confirmation copy follow [writing-style.md](../writing-style.md).
+- Do not stop at "No data" or "Something went wrong". Add the cause and the next step.
 
-## 7. 状态矩阵
+## 7. State matrix
 
-新增页面前先填这张表，缺一列就说明状态没有设计完。
+Fill this table before building a page. A missing column means the state is not designed.
 
-| 界面     | 加载中           | 空                   | 失败                | 成功               |
-| -------- | ---------------- | -------------------- | ------------------- | ------------------ |
-| 列表     | 行骨架           | 空状态 + 创建入口    | 区块 Alert + 重试   | 列表 + 底部加载    |
-| 详情     | 详情骨架         | 「记录不存在」+ 返回 | 区块 Alert + 重试   | 详情内容           |
-| 表单     | 提交按钮 loading | 不适用               | 字段错误 + 顶部汇总 | Toast + 关闭/跳转  |
-| 概览     | 数字骨架         | 引导创建/导入        | 区块 Alert + 重试   | 状态 + 数字 + 列表 |
-| 搜索结果 | 结果骨架         | 「没有找到」+ 清除   | 区块 Alert + 重试   | 结果 + 计数        |
+| Surface       | Loading               | Empty                         | Failure                       | Success                           |
+| ------------- | --------------------- | ----------------------------- | ----------------------------- | --------------------------------- |
+| List          | Row skeletons         | Empty state plus create entry | Block `Alert` plus retry      | List plus tail loading            |
+| Detail        | Detail skeleton       | "Record not found" plus back  | Block `Alert` plus retry      | Detail content                    |
+| Form          | Submit button loading | Not applicable                | Field errors plus top summary | Toast plus close or redirect      |
+| Overview      | Number skeletons      | Prompt to create or import    | Block `Alert` plus retry      | Status, numbers, and recent items |
+| Search result | Result skeletons      | "No results" plus clear       | Block `Alert` plus retry      | Results plus count                |

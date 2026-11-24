@@ -1,75 +1,78 @@
 # Release Checklist
 
-**项目**: starter-mygo-react-router | **最后更新**: 2026-11-01
+**Project**: starter-mygo-react-router | **Last updated**: 2026-11-24
 
-> 脚手架通过 `mygo build` 打包为桌面应用，安装包输出到 `release/`。目标：每个「里程碑发布」的产物在真实环境验证通过，不留已知回归。
+> `mygo build` packages the desktop app and writes installers to `release/`. Go through this list before a milestone release so the packaged build passes in a real environment.
 
-## 版本纪律
+## Versioning
 
-- 版本号单一来源：`mygo.config.ts` 的 `version` 字段（SemVer 2.0.0）；`package.json` 的 `version` 与之保持一致
-- 仅在**验证门禁全绿**后打 tag：`git tag v0.1.0 && git push --tags`
-- 每次发布 version 单调递增，禁止回退
-- `CHANGELOG.md` 的 Unreleased 节在发布前迁移到版本节
+- The version lives in `package.json`. `mygo.config.ts` imports it, so the app version and the release tag stay in one place. Use SemVer 2.0.0.
+- `release.yml` checks that the pushed tag equals `v` plus the `package.json` version. A mismatch fails the build.
+- Tag only after every gate passes: `git tag v0.1.0 && git push --tags`.
+- Increase the version on every release. Do not move it backwards.
+- Move the Unreleased entries in `CHANGELOG.md` into the version section before tagging.
 
-## 验证门禁（发布前必过）
+## Gates
 
-- [ ] `bun run typecheck` 通过
-- [ ] `bun run lint` 通过
-- [ ] `go build ./... && go vet ./...` 通过
-- [ ] `bun run build` 通过（`mygo build`，安装包输出到 `release/`）
-- [ ] `bun run test` 全绿（Vitest）
-- [ ] `bun run test:coverage` 达到阈值（`app/lib` ≥ 55%）
-- [ ] 关键测试能失败：故意改坏被测行为时相关测试会变红
-- [ ] 无 `skip` / `only` / 空跑用例冒充通过
-- [ ] lefthook pre-commit / pre-push 钩子无跳过
+- [ ] `bun run typecheck` passes.
+- [ ] `bun run lint` passes.
+- [ ] `go build ./... && go vet ./...` passes.
+- [ ] `bun run build` passes (`mygo build`, installers in `release/`).
+- [ ] `bun run test` passes.
+- [ ] `bun run test:coverage` meets the threshold (`app/lib` ≥ 55%).
+- [ ] Critical tests can fail: breaking the behavior turns them red.
+- [ ] No `skip`, `only`, or empty runs presented as passing.
+- [ ] No lefthook pre-commit or pre-push hook skipped.
 
-## 功能冒烟（真实环境实测）
+## Smoke tests
 
-> 在 `bun run dev` 的开发版与 `bun run build` 的安装版分别验证，勾选并记录日期。业务功能落地后在此追加对应冒烟项。
+Run these in `bun run dev` and in the packaged app from `bun run build`. Check the box and record the date.
 
-### 脚手架基础
+### Scaffold basics
 
-- [ ] 首页加载正常（首屏内容可见，无白屏闪烁）
-- [ ] 路由切换（`/` → 404 页）顶部进度条正常
-- [ ] 404 页面展示 + 返回首页可导航
-- [ ] 错误边界（模拟异常）展示错误信息 + 重试按钮
-- [ ] MyGo 面板显示系统信息，`Greeter` 调用返回 Go 侧结果
-- [ ] `bun run dev:web` 浏览器预览显示「Go 绑定不可用」提示，不报错
+- [ ] Home page loads with visible first-screen content and no white flash.
+- [ ] Route change (`/` → 404) shows the top progress bar.
+- [ ] The 404 page renders and returns to the home page.
+- [ ] The error boundary shows a message and a retry action when an error is simulated.
+- [ ] The MyGo panel shows system information, and `Greeter` returns the Go-side result.
+- [ ] Typing in the search card cancels the previous Go call and shows matching topics.
+- [ ] `bun run dev:web` shows the "Go bindings unavailable" message without errors.
 
-### 主题与响应式
+### Theme and responsive layout
 
-- [ ] 浅色 / 深色 / 系统三种主题切换生效且持久化（刷新保留）
-- [ ] Dark Mode 下组件配色完整（无漏配）
-- [ ] 移动端（<768px）响应式布局正常
+- [ ] Light, dark, and system themes switch and persist across reloads.
+- [ ] Every component renders correctly in dark mode.
+- [ ] The layout works below 768 px.
 
-### 无障碍
+### Accessibility
 
-- [ ] 键盘焦点可见（focus-visible ring）
-- [ ] 交互元素有可访问名称（ARIA）
+- [ ] Keyboard focus is visible (focus-visible ring).
+- [ ] Interactive elements have accessible names (ARIA).
 
-## 文档一致性
+## Documentation consistency
 
-- [ ] `docs/README.md` 的索引链接都能打开
-- [ ] 改动涉及的路径、命令、路由、字段名与代码一致
-- [ ] 新增/移动/删除的文档已更新索引
-- [ ] 已完成阶段计划已 `git mv` 到 `docs/archive/`
-- [ ] `CHANGELOG.md` 的 Unreleased 已迁移到版本节
-- [ ] `docs/writing-style.md` 的提交前检查命中项已人工处理
-- [ ] 本次改动涉及的 postmortem 高频雷区已对照检查
+- [ ] Every index link in `docs/README.md` opens.
+- [ ] Changed paths, commands, routes, and field names match the code.
+- [ ] Added, moved, and deleted documents are reflected in the index.
+- [ ] Completed stage plans were moved to `docs/archive/`.
+- [ ] `CHANGELOG.md` has a version section for this release.
+- [ ] The pre-commit checks in `docs/writing-style.md` were reviewed.
+- [ ] The changes were checked against the recurring patterns in `docs/postmortem/README.md`.
 
-## 稳定性
+## Stability
 
-- [ ] 无网络 / 错误响应时页面不白屏
-- [ ] 控制台无报错 / 警告
-- [ ] Lighthouse（可选）基础通过
+- [ ] The page does not go blank on network failure or an error response.
+- [ ] The console has no errors or warnings.
+- [ ] Lighthouse basics pass (optional).
 
-## 发布步骤
+## Steps
 
-1. 更新 `CHANGELOG.md`（Unreleased → 版本节）
-2. 更新 `docs/README.md` 索引和文档一致性清单（如涉及新增/移动文档）
-3. 合并到 `main` → CI 通过
-4. 在开发版与安装版上勾选冒烟清单
-5. 打 Tag：`git tag v0.1.0 && git push --tags`
-6. GitHub Release：`gh release create v0.1.0 --generate-notes`
+1. Update `CHANGELOG.md` (Unreleased → version section).
+2. Update the `docs/README.md` index and the consistency checklist when documents changed.
+3. Merge to `main` and let CI pass.
+4. Run the smoke tests in the dev build and the packaged app.
+5. Tag: `git tag v0.1.0 && git push --tags`.
+6. Let `.github/workflows/release.yml` build the macOS, Windows, and Linux targets from the tag.
+7. Create the release from the uploaded artifacts: `gh release create v0.1.0 --generate-notes`.
 
-> 真机 / 真实环境验证由作者在发布前执行，勾选并记录日期。
+> The maintainer runs the device and environment checks before release, then records the date.

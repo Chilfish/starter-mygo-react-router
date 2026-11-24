@@ -1,88 +1,88 @@
 ---
-编号: 00X
-主题: （一句话，描述问题或决策）
-日期: YYYY-MM-DD
-严重级别: SEV-0 / SEV-1 / SEV-2 / SEV-3
-分类: 架构 / 流程 / 缺陷 / 依赖 / 变更
-状态: Active / Mitigated
-根因归类: 流程缺失 / 决策滞后 / 设计建模 / 工具反馈
+id: 00X
+topic: (One sentence describing the incident or decision)
+date: YYYY-MM-DD
+severity: SEV-0 / SEV-1 / SEV-2 / SEV-3
+category: Architecture / Process / Defect / Dependency / Change
+status: Active / Mitigated
+root_cause: Missing process / Late decision / Design modeling / Tool feedback
 ---
 
-# 00X — （标题）
+# 00X — (Title)
 
-## 摘要
+## Summary
 
-3-5 句话：发生了什么、为什么发生、如何修复。聚焦**系统条件**（什么环境允许它发生），而不是人。
+Three to five sentences: what happened, why it happened, and how it was fixed. Focus on **system conditions** (what allowed it), not on people.
 
-## 影响
+## Impact
 
-分用户可见、返工量、隐藏风险三块。能量化就量化：返工行数、提交数、影响时长。
+Cover user-visible impact, rework, and hidden risk. Quantify where possible: changed lines, commits, duration.
 
-## 时间线
+## Timeline
 
-| 日期 / commit | 事件 |
-| ------------- | ---- |
+| Date / commit | Event |
+| ------------- | ----- |
 
-## 根因分析（blameless）
+## Root cause (blameless)
 
-列贡献因素，不要为了结论硬凑单一根因。必要时用 5 Whys。归因于系统条件而非个人。
+List contributing factors. Do not force a single cause. Use 5 Whys when useful. Attribute to system conditions, not individuals.
 
-## 触发条件
+## Trigger
 
-潜伏缺陷被什么激活：特定输入、环境变量、上游变更、并发时序。
+What activated the latent defect: a specific input, an environment variable, an upstream change, or timing.
 
-## 检测
+## Detection
 
-怎么发现的，当时为什么没更早发现。检测盲区在哪。
+How it was found, and why it was not found earlier. Where is the detection blind spot?
 
-## 处置
+## Response
 
-怎么止住、改了什么、有没有临时绕行。
+How it was stopped, what changed, and whether a temporary workaround was used.
 
-## 做得对的地方
+## What worked
 
-值得保留并持续做的行为。
+Behavior worth keeping.
 
-## 行动项
+## Action items
 
-### 缓解（针对已发生的具体缺口）
+### Mitigation (the specific gap)
 
-- [ ] P0/P1/P2 + owner，针对本次暴露的具体缺口
+- [ ] P0/P1/P2 plus owner, scoped to the gap exposed by this incident.
 
-### 预防（针对整类问题）
+### Prevention (the class of problem)
 
-- [ ] 面向整类问题；流程级预防必须同步到 `AGENTS.md` / `docs/engineering/git-workflow.md`
-- [ ] 能落成门禁的，补测试或 lint 规则，并确认故意改坏时会变红
+- [ ] Addresses the whole class. Sync process-level prevention to `AGENTS.md` or `docs/engineering/git-workflow.md`.
+- [ ] Where a gate is possible, add a test or lint rule and confirm that breaking the behavior turns it red.
 
-## 教训
+## Lessons
 
-1-2 句可执行的结论，写入 [README.md](./README.md) 的「高频雷区」自查清单。
+One or two actionable conclusions. Add the check to [README.md](./README.md) under recurring risks.
 
-## Changed Files
+## Changed files
 
 ```
 path/to/changed-file
 ```
 
-## 关联报告
+## Related reports
 
-- 同源或复发的 postmortem 编号
-- 相关 review 记录
+- Related or recurring postmortem IDs
+- Related review records
 
 ---
 
-## 写作要求
+## Writing requirements
 
-- 不用 emoji
-- 不写「值得注意的是」「综上所述」这类填充
-- 区分事实与推测；查不到的写「未确认」，不编造时间或数据
-- 行动项的负责人写实际归属；单人项目写「维护者」，不写「—」
+- No emoji.
+- No filler such as "it is worth noting" or "in summary".
+- Separate facts from guesses. Write "unconfirmed" rather than inventing a time or number.
+- Name the real owner of an action item. On a solo project, write "maintainer", not a dash.
 
-## 如何新增一条 postmortem
+## Adding a postmortem
 
-1. 复制本模板为 `docs/postmortem/0NN-<kebab-case>.md`（编号递增）
-2. 填写元信息：编号 / 主题 / 日期 / 严重级别 / 分类 / 状态 / 根因归类
-3. 填写各章节；根因归因到系统条件，不 blame 个人
-4. 在 [README.md](./README.md) 索引表加一行
-5. 将「教训」浓缩为「高频雷区」的一条自查规则
-6. 若预防属流程级，同步到 `AGENTS.md` 或 `docs/engineering/git-workflow.md`
+1. Copy this template to `docs/postmortem/0NN-<kebab-case>.md` with the next ID.
+2. Fill the metadata: ID, topic, date, severity, category, status, root cause.
+3. Write each section. Attribute the root cause to system conditions, not to a person.
+4. Add a row to the index in [README.md](./README.md).
+5. Distill the lesson into one check under recurring risks.
+6. If prevention is process-level, sync it to `AGENTS.md` or `docs/engineering/git-workflow.md`.

@@ -1,29 +1,29 @@
-# 规划与架构（Planning）
+# Planning
 
-本目录记录系统架构决策（ADR）与任务规划。文档关系：
+Architecture decisions (ADRs) and task planning. Relationship to other directories:
 
 ```
-requirements/（需求真相源 —— 描述「要做什么」）
-planning/（规划与执行 —— 描述「怎么做、做到哪了」）
-  ├── architecture.md   ← ADR 记录架构决策
-  ├── backlog.md        ← 未排程任务候选
-  └── todo-*.md        ← 当前阶段行动计划
+requirements/   what to build
+planning/       how to build it and how far it has progressed
+  ├── architecture.md   architecture overview and ADRs
+  ├── backlog.md        unscheduled candidates and the review queue
+  └── todo-*.md         current stage plans
 ```
 
-## 文档索引
+## Index
 
-| 文档                                 | 说明                               | 何时阅读         |
-| ------------------------------------ | ---------------------------------- | ---------------- |
-| [architecture.md](./architecture.md) | 系统架构总览 + ADR 记录            | 任何架构级变更前 |
-| [backlog.md](./backlog.md)           | 未决任务清单（含前置条件）         | 规划下一阶段任务 |
-| `todo-*.md`                          | 当前阶段行动计划（新建后在此登记） | 当前阶段         |
+| Document                             | Contents                                           | Read when                  |
+| ------------------------------------ | -------------------------------------------------- | -------------------------- |
+| [architecture.md](./architecture.md) | System overview and decision records               | Before a structural change |
+| [backlog.md](./backlog.md)           | Open tasks, review queue, completed items          | Planning the next stage    |
+| `todo-*.md`                          | Current stage plan (register it here when created) | Current stage              |
 
-## 约定
+## Conventions
 
-1. 关键架构决策（ADR）格式：`ADR-NNN`，追加到 `architecture.md`
-2. 阶段计划用 `todo-<kebab-case>.md`，完成或取消后用 `git mv` 移到 `archive/`
-3. 审查问题按编号承接进 backlog 或 `todo-*`，交付后标记 ✅ 并记录 commit hash
-4. **计划不是现状**：正文只写已经成立的事实；未开工或进行中的任务放 backlog / `todo-*`
-5. 新任务先登记再实现，写清来源（需求 / 审查 / postmortem / 用户反馈）
-6. backlog 状态统一：📋 未开始 / 🚧 进行中 / ✅ 已完成 / ⏸️ 暂缓 / ❌ 已移除
-7. 文档与界面文案按 [writing-style.md](../writing-style.md)
+1. Record decisions as `ADR-NNN` and append them to `architecture.md`.
+2. Name stage plans `todo-<kebab-case>.md`. Move completed or cancelled plans to `archive/` with `git mv`.
+3. Carry review findings into the backlog or a `todo-*` file. Mark them `Done` with the commit hash when delivered.
+4. **A plan is not current state**: The main text states only what is already true. Open or in-progress work belongs in the backlog or a `todo-*` file.
+5. Register a task before implementing it and name the source: requirement, review, postmortem, or user feedback.
+6. Backlog status values: `Todo`, `In progress`, `Done`, `Paused`, `Removed`.
+7. Documents and UI copy follow [writing-style.md](../writing-style.md).

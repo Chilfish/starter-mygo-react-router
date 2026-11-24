@@ -1,22 +1,22 @@
-# 用户故事（User Stories）
+# User Stories
 
-> fork 本脚手架后，按产品需求填充。按 Epic 分组，每个故事标注状态与验收标准。
+> Replace the placeholder epic after forking. Group stories by epic, and give each story a status and acceptance criteria.
 
-## Epic 1：{Epic 名称}
+## Epic 1: {Epic name}
 
-### US-{N}：{用户故事}
+### US-1: {Story title}
 
-> 作为**{角色}**，我想要**{能力}**，以便**{价值}**。
+> As a **{role}**, I want **{capability}**, so that **{value}**.
 
-- **状态**：✅ 已完成 / 📋 规划中 / ⏸️ 暂缓
-- **验收标准**：
-  - [ ] （可验证的验收条件）
-  - [ ] （可验证的验收条件）
+- **Status**: Done / Planned / Paused
+- **Acceptance criteria**:
+  - [ ] (Observable condition)
+  - [ ] (Observable condition)
 
 ---
 
-## 变更记录
+## Change log
 
-| 日期           | 变更              |
-| -------------- | ----------------- |
-| （YYYY-MM-DD） | （新增/修改故事） |
+| Date       | Change            |
+| ---------- | ----------------- |
+| YYYY-MM-DD | (Added or edited) |

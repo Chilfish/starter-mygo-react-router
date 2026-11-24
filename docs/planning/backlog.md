@@ -1,41 +1,43 @@
-# 任务清单（Backlog）
+# Backlog
 
-> 未决任务候选 + 阶段计划索引。审查问题、postmortem 预防项、产品需求在此登记并排期。
-> 阶段计划单独建 `todo-*.md`（完成后 `git mv` 到 `archive/`），backlog 仅登记状态与优先级。
+> Open task candidates and the current stage-plan index. Review findings, postmortem actions, and product requirements are registered here and scheduled from here.
+> A stage plan gets its own `todo-*.md` file and moves to `archive/` when done. The backlog records status and priority only.
 
-## 候选（未排期）
+Status: `Todo`, `In progress`, `Done`, `Paused`, `Removed`.
 
-| 编号 | 任务         | 优先级   | 前置条件 | 来源             | 状态 |
-| ---- | ------------ | -------- | -------- | ---------------- | ---- |
-| B1   | （任务描述） | P0/P1/P2 | （依赖） | （审查/PM/需求） | 📋   |
+## Candidates (unscheduled)
 
-## 审查承接区
+| ID  | Task            | Priority | Depends on | Source | Status |
+| --- | --------------- | -------- | ---------- | ------ | ------ |
+| —   | No entries yet. | —        | —          | —      | —      |
 
-> 来自 `docs/reviews/` 的问题按 Z（安全/授权）/ R（资源）/ E（工程）/ U（UI）编号登记，承接时新建 todo-*。
+## Review queue
 
-| #      | 问题         | 优先级   | 状态 |
-| ------ | ------------ | -------- | ---- |
-| （Z1） | （问题摘要） | P0/P1/P2 | 📋   |
+> Findings from `docs/reviews/` are numbered Z (security/authorization), R (resources), E (engineering), or U (UI/UX). Start a `todo-*` file when work begins.
 
-## 已移除
+| ID  | Finding         | Priority | Status |
+| --- | --------------- | -------- | ------ |
+| —   | No entries yet. | —        | —      |
 
-| 编号 | 任务 | 移除原因 |
-| ---- | ---- | -------- |
-|      |      |          |
+## Removed
 
-## 已完成
+| ID  | Task | Reason |
+| --- | ---- | ------ |
+| —   | —    | —      |
 
-| 编号 | 任务 | 完成日期 | 阶段计划 |
-| ---- | ---- | -------- | -------- |
-|      |      |          |          |
+## Completed
 
-## 质量门槛
+| ID  | Task | Completed | Stage plan |
+| --- | ---- | --------- | ---------- |
+| —   | —    | —         | —          |
 
-每个任务交付前必须通过（见 `docs/engineering/git-workflow.md` 验证门禁）：
+## Gate
+
+Every task passes the gates in [engineering/git-workflow.md](../engineering/git-workflow.md) before delivery:
 
 ```bash
 bun run typecheck
 bun run lint
-bun run build
 bun run test
+bun run build
 ```

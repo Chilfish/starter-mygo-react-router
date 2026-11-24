@@ -1,15 +1,15 @@
-# 存档（Archive）
+# Archive
 
-已完成的阶段计划、旧版文档的存放地。**不主动读取**，仅作历史参考。
+Completed stage plans and superseded documents. **Do not read proactively**; use this directory for historical reference only.
 
-## 约定
+## Conventions
 
-1. 阶段计划完成后用 `git mv` 移入本目录（保留历史）
-2. 本目录文档标注状态与完成日期
-3. 需要时按文件内索引检索
+1. Move a completed stage plan here with `git mv` to keep its history.
+2. Mark the status and completion date on the document.
+3. Use the index below to find a file when needed.
 
-## 目录
+## Contents
 
-| 文件     | 说明 | 状态 |
-| -------- | ---- | ---- |
-| （暂无） |      |      |
+| File | Description     | Status |
+| ---- | --------------- | ------ |
+| —    | No entries yet. | —      |

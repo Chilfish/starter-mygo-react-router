@@ -1,208 +1,211 @@
-# 视觉：颜色、字体、间距与动效
+# Visual System: Color, Type, Spacing, and Motion
 
-> 本页定义可复用的视觉规则，值来自 [`app/app.css`](../../app/app.css)。组件用法见 [GENERAL.md](./GENERAL.md)，页面结构见 [patterns.md](./patterns.md)，规则依据见 [research.md](./research.md)。
+> Reusable visual rules. Values come from [`app/app.css`](../../app/app.css). Component usage is in [GENERAL.md](./GENERAL.md), page structure in [patterns.md](./patterns.md), and rationale in [research.md](./research.md).
 
-## 设计语言
+## Design language
 
-**先回答，再陈列。** 打开一屏先得到当前状态与下一步，明细放在二级区域。首屏按 5 秒扫读设计。
+**Answer first, then list.** A screen starts with the current status and the next action. Details live in a secondary area. Design the first screen for a five-second scan.
 
-**层级来自取舍。** 每个视图保留一个主操作与一组主数字。其余动作降为 `ghost` / `outline`，低频动作收进菜单。
+**Hierarchy comes from choices.** Each view keeps one primary action and one set of key numbers. Secondary actions use `ghost` or `outline`; low-frequency actions go into a menu.
 
-**表面从简。** 页面用留白与分组标题组织；需要边界时用一条分隔线。卡片只承载独立对象，一屏保持一层 elevation，卡片内不再套卡片。明显阴影只出现在浮层，卡片最多一层极轻阴影。
+**Keep surfaces simple.** Group with whitespace and section titles; add one divider where a boundary is needed. A card holds one independent object, the screen keeps one elevation level, and cards never nest. Visible shadows appear only on overlays; cards use at most a very light shadow.
 
-**颜色有上限。** 一个主色、一组中性色、三个语义色。语义色只表达状态，装饰交给内容本身。界面表面使用纯色，渐变只用于品牌插画或媒体占位。
+**Limit color.** One primary color, one neutral scale, and three semantic colors. Semantic colors express state only; decoration comes from the content. Surfaces use solid colors; gradients are reserved for brand artwork or media placeholders.
 
-**字体建立节奏。** 字号档位之间至少差 2px，用字重和颜色区分层级，不靠微调字号制造层次。
+**Typography sets rhythm.** Adjacent type sizes differ by at least 2 px. Use weight and color for hierarchy, not small size adjustments.
 
-**动效解释变化。** 进入用淡入与轻微位移，退出反向；循环动画只用于加载。
+**Motion explains change.** Entrances fade in with a small offset, exits reverse it. Looping animation is for loading only.
 
-## 1. 颜色
+## 1. Color
 
-### 1.1 Token
+### 1.1 Tokens
 
-所有颜色通过 Tailwind v4 的 `@theme inline` 映射为 `color-*` Token。浅色在 `:root`，深色在 `.dark`。
+Every color is mapped through Tailwind v4 `@theme inline` to a `color-*` token. Light values live in `:root`; dark values live in `.dark`.
 
-| Token                          | 浅色                                     | 深色                           | 用途                   |
-| ------------------------------ | ---------------------------------------- | ------------------------------ | ---------------------- |
-| `background`                   | `white`                                  | `neutral-950` 95% + 白         | 页面最底层背景         |
-| `foreground`                   | `neutral-800`                            | `neutral-100`                  | 正文与标题             |
-| `card`                         | `white`                                  | `background` 98% + 白          | 卡片、面板             |
-| `popover`                      | `white`                                  | `background` 98% + 白          | 浮层、菜单、弹出框     |
-| `primary`                      | `rgb(29, 155, 240)`                      | `rgb(29, 155, 240)`            | 主操作、选中态、焦点环 |
-| `primary-foreground`           | `white`                                  | `white`                        | 主色上的文字           |
-| `secondary`                    | `black` 4%                               | `white` 4%                     | 次要按钮、次要区域     |
-| `muted`                        | `black` 4%                               | `white` 4%                     | 骨架屏、低强调背景     |
-| `muted-foreground`             | `neutral-500` 90% + 黑                   | `neutral-500` 90% + 白         | 说明、占位符、辅助图标 |
-| `accent`                       | `black` 4%                               | `white` 4%                     | hover、选中高亮        |
-| `destructive`                  | `red-500`                                | `red-500` 90% + 白             | 删除、错误             |
-| `destructive-foreground`       | `red-700`                                | `red-400`                      | 危险操作文字与图标     |
-| `border`                       | `black` 8%                               | `white` 6%                     | 卡片边框、分隔线       |
-| `input`                        | `black` 10%                              | `white` 8%                     | 输入框与控件边框       |
-| `ring`                         | `primary`                                | `primary`                      | `focus-visible` 环     |
-| `info` / `success` / `warning` | `blue-500` / `emerald-500` / `amber-500` | 同左                           | 状态色                 |
-| `sidebar`                      | `neutral-50`                             | `neutral-950` 97% + 白         | 侧栏背景               |
-| `chart-1` … `chart-5`          | 橙 / 青 / 深青 / 琥珀 / 琥珀             | 深蓝 / 翠绿 / 琥珀 / 紫 / 玫红 | 图表分类色             |
+| Token                          | Light                                            | Dark                                                       | Use                                     |
+| ------------------------------ | ------------------------------------------------ | ---------------------------------------------------------- | --------------------------------------- |
+| `background`                   | `white`                                          | `neutral-950` 95% + white                                  | Page base                               |
+| `foreground`                   | `neutral-800`                                    | `neutral-100`                                              | Body text and headings                  |
+| `card`                         | `white`                                          | `background` 98% + white                                   | Cards and panels                        |
+| `popover`                      | `white`                                          | `background` 98% + white                                   | Overlays, menus, popups                 |
+| `primary`                      | `rgb(29, 155, 240)`                              | `rgb(29, 155, 240)`                                        | Primary action, selection, focus ring   |
+| `primary-foreground`           | `white`                                          | `white`                                                    | Text on primary                         |
+| `secondary`                    | `black` 4%                                       | `white` 4%                                                 | Secondary buttons and areas             |
+| `muted`                        | `black` 4%                                       | `white` 4%                                                 | Skeletons, low-emphasis backgrounds     |
+| `muted-foreground`             | `neutral-500` 90% + black                        | `neutral-500` 90% + white                                  | Captions, placeholders, secondary icons |
+| `accent`                       | `black` 4%                                       | `white` 4%                                                 | Hover and selected highlight            |
+| `destructive`                  | `red-500`                                        | `red-500` 90% + white                                      | Delete and error                        |
+| `destructive-foreground`       | `red-700`                                        | `red-400`                                                  | Destructive text and icons              |
+| `border`                       | `black` 8%                                       | `white` 6%                                                 | Card borders and dividers               |
+| `input`                        | `black` 10%                                      | `white` 8%                                                 | Input and control borders               |
+| `ring`                         | `primary`                                        | `primary`                                                  | `focus-visible` ring                    |
+| `info` / `success` / `warning` | `blue-500` / `emerald-500` / `amber-500`         | Same                                                       | Status colors                           |
+| `sidebar`                      | `neutral-50`                                     | `neutral-950` 97% + white                                  | Sidebar background                      |
+| `chart-1` … `chart-5`          | orange / teal / cyan-900 / amber-400 / amber-500 | blue-700 / emerald-500 / amber-500 / purple-500 / rose-500 | Chart categories                        |
 
-完整值见 [`app/app.css`](../../app/app.css)。新增颜色先加 Token，再在组件里引用；不要在组件中写一次性色值。
+Full values are in [`app/app.css`](../../app/app.css). Add a token before using a new color; never write a one-off value in a component.
 
-### 1.2 使用规则
+### 1.2 Usage
 
 ```tsx
-// 正确：语义 Token
+// Correct: semantic tokens
 <div className="bg-background text-foreground">
-  <p className="text-muted-foreground">辅助说明</p>
-  <Button>确认</Button>
+  <p className="text-muted-foreground">Secondary note</p>
+  <Button>Confirm</Button>
 </div>
 
-// 错误：硬编码颜色
+// Wrong: hardcoded colors
 <div className="bg-white text-black">
-  <p className="text-gray-500">辅助说明</p>
-  <button className="bg-blue-500 text-white">确认</button>
+  <p className="text-gray-500">Secondary note</p>
+  <button className="bg-blue-500 text-white">Confirm</button>
 </div>
 
-// 错误：只写浅色
+// Wrong: light mode only
 <div className="bg-white">...</div>
 ```
 
-- 浅色与深色由 `.dark` 下的变量切换，组件里不写 `dark:` 覆盖颜色。
-- 状态同时用文字或图标表达，颜色只作辅助。
-- `primary` 与白色的对比约 3:1，适合大字号、图形和焦点环。正文或小字号按钮需要更高对比时使用 `foreground`，或在业务侧定义更深的品牌色变体。
-- 图表使用 `chart-*`，不要从品牌色临时派生。
+- The `.dark` variable set switches light and dark values. Components do not override colors with `dark:`.
+- Express state with text or an icon as well as color.
+- `primary` against white is approximately 3:1. It suits large text, graphics, and focus rings. Body text and small buttons need higher contrast: use `foreground`, or define a darker brand variant in the product.
+- Charts use `chart-*`; do not derive chart colors from the brand color on the fly.
 
-## 2. 字体
+## 2. Typography
 
-| 项       | 值                                                 |
-| -------- | -------------------------------------------------- |
-| 正文字体 | `Inter`（`--font-sans`）                           |
-| 标题字体 | `Inter`（`--font-heading`）                        |
-| 等宽字体 | `Geist Mono`（`--font-mono`），用于 id、路径、代码 |
-| 数字     | `tabular-nums`，用于统计、时间、金额               |
+| Item         | Value                                                  |
+| ------------ | ------------------------------------------------------ |
+| Body font    | `Inter` (`--font-sans`)                                |
+| Heading font | `Inter` (`--font-heading`)                             |
+| Mono font    | `Geist Mono` (`--font-mono`), for IDs, paths, and code |
+| Numbers      | `tabular-nums`, for statistics, time, and money        |
 
-### 2.1 字号档位
+`@fontsource-variable/noto-sans` is imported in `app/app.css` but no token references it yet.
 
-| 层级     | Tailwind                          | 用途                     |
-| -------- | --------------------------------- | ------------------------ |
-| 页面标题 | `text-2xl font-bold` / `text-3xl` | 路由级标题               |
-| 区块标题 | `text-xl font-semibold`           | Section、Empty 标题      |
-| 卡片标题 | `text-lg font-semibold`           | CardTitle、对话框标题    |
-| 强调正文 | `text-base font-medium`           | 关键说明、按钮（移动端） |
-| 正文     | `text-sm`                         | 默认正文                 |
-| 辅助文字 | `text-xs text-muted-foreground`   | 描述、时间戳、字段说明   |
-| 微文字   | `text-[0.6875rem]`                | 极小的元数据             |
+### 2.1 Type scale
 
-- 正文行高保持 1.5；长文本容器允许换行与滚动，不固定高度。
-- 按钮在移动端使用 `text-base`，`sm` 以上收为 `text-sm`，这是组件内置行为。
-- 数字与时间使用等宽数字；技术字段使用 `font-mono`。
+| Level           | Tailwind                          | Use                                   |
+| --------------- | --------------------------------- | ------------------------------------- |
+| Page title      | `text-2xl font-bold` / `text-3xl` | Route-level title                     |
+| Section title   | `text-xl font-semibold`           | Section and empty-state title         |
+| Card title      | `text-lg font-semibold`           | `CardTitle`, dialog title             |
+| Emphasized body | `text-base font-medium`           | Key notes, mobile buttons             |
+| Body            | `text-sm`                         | Default body                          |
+| Secondary text  | `text-xs text-muted-foreground`   | Descriptions, timestamps, field notes |
+| Micro text      | `text-[0.6875rem]`                | Very small metadata                   |
 
-## 3. 间距与圆角
+- Body line height is 1.5. Long text wraps and scrolls; do not fix its height.
+- Buttons use `text-base` on mobile and `text-sm` from `sm` up. This is built into the component.
+- Numbers and times use tabular figures; technical fields use `font-mono`.
 
-### 3.1 间距
+## 3. Spacing and radius
 
-基准单位 4px（Tailwind `1` = 0.25rem）。
+### 3.1 Spacing
 
-| 值   | 像素 | 使用场景                     |
-| ---- | ---- | ---------------------------- |
-| `1`  | 4px  | 图标与文字间隙               |
-| `2`  | 8px  | 列表项内边距、标签间距       |
-| `3`  | 12px | 控件内边距、紧凑区块         |
-| `4`  | 16px | 卡片内边距、内容区           |
-| `6`  | 24px | 区块间距                     |
-| `8`  | 32px | 页面大区块                   |
-| `12` | 48px | 页面顶部留白、空状态垂直间距 |
+Base unit: 4 px (Tailwind `1` = 0.25rem).
 
-### 3.2 圆角
+| Value | Pixels | Use                                          |
+| ----- | ------ | -------------------------------------------- |
+| `1`   | 4 px   | Icon-to-text gap                             |
+| `2`   | 8 px   | List row padding, label spacing              |
+| `3`   | 12 px  | Control padding, compact sections            |
+| `4`   | 16 px  | Card padding, content area                   |
+| `6`   | 24 px  | Section spacing                              |
+| `8`   | 32 px  | Large page sections                          |
+| `12`  | 48 px  | Page top padding, empty-state vertical space |
 
-基于 `--radius: 0.625rem`（10px）。
+### 3.2 Radius
 
-| Token          | 值   | 使用场景                    |
-| -------------- | ---- | --------------------------- |
-| `rounded-sm`   | 6px  | 小徽章、骨架屏              |
-| `rounded-md`   | 8px  | 紧凑按钮、菜单项            |
-| `rounded-lg`   | 10px | 默认按钮、输入框、Toast     |
-| `rounded-xl`   | 14px | 提示条、FramePanel          |
-| `rounded-2xl`  | 18px | Card、Dialog、Sheet、Drawer |
-| `rounded-3xl`  | 22px | 大型容器                    |
-| `rounded-full` | 全圆 | 头像、进度条、开关          |
+Based on `--radius: 0.625rem` (10 px).
 
-- 圆角保持同心：外层圆角约等于内层圆角加内边距。
-- 媒体图块使用 `rounded-lg`；头像使用全圆。
-- 不为单个页面发明一次性圆角。
+| Token          | Value | Use                              |
+| -------------- | ----- | -------------------------------- |
+| `rounded-sm`   | 6 px  | Small badges, skeletons          |
+| `rounded-md`   | 8 px  | Compact buttons, menu items      |
+| `rounded-lg`   | 10 px | Default buttons, inputs, toasts  |
+| `rounded-xl`   | 14 px | Alerts, `FramePanel`             |
+| `rounded-2xl`  | 18 px | Cards, dialogs, sheets, drawers  |
+| `rounded-3xl`  | 22 px | Large containers                 |
+| `rounded-4xl`  | 26 px | Full-bleed visual containers     |
+| `rounded-full` | Full  | Avatars, progress bars, switches |
 
-## 4. 阴影与层级
+- Keep radii concentric: the outer radius is roughly the inner radius plus the padding.
+- Media blocks use `rounded-lg`; avatars are fully round.
+- Do not invent a one-off radius for a single page.
 
-| 层级     | 表达                            | 使用场景            |
-| -------- | ------------------------------- | ------------------- |
-| 页面背景 | 无阴影                          | `background`        |
-| 区块     | 留白 + 可选 `border-b`          | 页面内容分组        |
-| 卡片     | `border` + 极轻阴影（组件内置） | 独立对象、设置面板  |
-| 浮层     | `shadow-lg/5` + 背景模糊        | Dialog、Sheet、菜单 |
-| 拖拽层   | 浮层阴影 + 位移                 | Drawer              |
+## 4. Elevation
 
-一屏只保留一层 elevation。卡片内不再放带阴影的卡片；需要分区时用 `Frame` / `FramePanel` 或分隔线。
+| Layer         | Expression                                   | Use                                  |
+| ------------- | -------------------------------------------- | ------------------------------------ |
+| Page          | No shadow                                    | `background`                         |
+| Section       | Whitespace plus optional `border-b`          | Content grouping                     |
+| Card          | `border` plus a very light shadow (built in) | Independent objects, settings panels |
+| Overlay       | `shadow-lg/5` plus backdrop blur             | Dialogs, sheets, menus               |
+| Dragged layer | Overlay shadow plus offset                   | Drawers                              |
 
-## 5. 动效
+One elevation level per screen. Do not place a shadowed card inside a card; use `Frame` / `FramePanel` or a divider instead.
 
-| 场景           | 时长      | 缓动                          |
-| -------------- | --------- | ----------------------------- |
-| hover / focus  | 150ms     | `ease-out`                    |
-| 淡入淡出       | 200–250ms | `--ease-apple`                |
-| Dialog / Sheet | 200ms     | `ease-in-out`                 |
-| Drawer         | 450ms     | `cubic-bezier(0.32,0.72,0,1)` |
-| 分段控件指示器 | 200ms     | `ease-in-out`                 |
-| 骨架屏         | 2s 循环   | `linear`                      |
+## 5. Motion
+
+| Case              | Duration   | Easing                           |
+| ----------------- | ---------- | -------------------------------- |
+| Hover and focus   | 150 ms     | `ease-out`                       |
+| Fade              | 200–250 ms | `--ease-apple`                   |
+| Dialog and sheet  | 200 ms     | `ease-in-out`                    |
+| Drawer            | 450 ms     | `cubic-bezier(0.32, 0.72, 0, 1)` |
+| Segmented control | 200 ms     | `ease-in-out`                    |
+| Skeleton          | 2 s loop   | `linear`                         |
 
 ```tsx
-// 常规过渡
+// Standard transition
 <div className="transition-colors duration-200 ease-out hover:bg-accent/50" />
 
-// 弹性只用于抽屉与分段指示器
+// Spring only for drawers and segmented indicators
 <div className="transition-transform duration-300 ease-[var(--ease-spring)]" />
 ```
 
-- 自定义动效控制在 150–350ms；超过 500ms 会让交互显得迟缓。
-- `prefers-reduced-motion: reduce` 时保留淡入，去掉位移与缩放。
-- 循环动画只用于加载，不用于装饰。
+- Custom motion stays between 150 and 350 ms. Above 500 ms, interaction feels slow.
+- Under `prefers-reduced-motion: reduce`, keep fades and drop movement and scale.
+- Looping animation is for loading only, never for decoration.
 
-## 6. 组件映射
+## 6. Component map
 
-| 需求           | 组件                                                                                                         |
-| -------------- | ------------------------------------------------------------------------------------------------------------ |
-| 按钮与图标按钮 | `button.tsx`：`default` / `secondary` / `outline` / `ghost` / `destructive` / `destructive-outline` / `link` |
-| 输入与搜索     | `input.tsx`；带图标或前后缀用 `input-group.tsx`                                                              |
-| 表单结构       | `field.tsx` / `fieldset.tsx` / `form.tsx`                                                                    |
-| 选择           | `select.tsx` / `combobox.tsx` / `autocomplete.tsx`                                                           |
-| 单项与多项选择 | `checkbox.tsx` / `checkbox-group.tsx` / `radio-group.tsx` / `switch.tsx`                                     |
-| 分段切换       | `segmented-control.tsx` / `toggle-group.tsx`                                                                 |
-| 卡片与面板     | `card.tsx` / `frame.tsx` / `group.tsx`                                                                       |
-| 侧栏与工具栏   | `sidebar.tsx` / `toolbar.tsx` / `breadcrumb.tsx`                                                             |
-| 标签页         | `tabs.tsx`                                                                                                   |
-| 数据展示       | `table.tsx` / `badge.tsx` / `avatar.tsx` / `pagination.tsx` / `progress.tsx` / `meter.tsx`                   |
-| 空与加载       | `empty.tsx` / `skeleton.tsx` / `spinner.tsx`                                                                 |
-| 提示           | `alert.tsx` / `toast.tsx` / `tooltip.tsx` / `kbd.tsx`                                                        |
-| 浮层           | `dialog.tsx` / `alert-dialog.tsx` / `sheet.tsx` / `drawer.tsx`                                               |
-| 菜单           | `dropdown-menu.tsx` / `context-menu.tsx` / `command.tsx`                                                     |
-| 弹出内容       | `popover.tsx` / `preview-card.tsx`                                                                           |
-| 滚动与折叠     | `scroll-area.tsx` / `collapsible.tsx` / `accordion.tsx`                                                      |
-| 媒体           | `media.tsx`                                                                                                  |
+| Need                     | Component                                                                                                               |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Buttons                  | `button.tsx`: `default`, `secondary`, `outline`, `ghost`, `destructive`, `destructive-outline`, `link`                  |
+| Inputs and search        | `input.tsx`; with icons, use `input-group.tsx`                                                                          |
+| Form structure           | `field.tsx`, `fieldset.tsx`, `form.tsx`                                                                                 |
+| Choice                   | `select.tsx`, `combobox.tsx`, `autocomplete.tsx`, `checkbox.tsx`, `checkbox-group.tsx`, `radio-group.tsx`, `switch.tsx` |
+| Segmented and toggles    | `segmented-control.tsx`, `toggle-group.tsx`, `toggle.tsx`                                                               |
+| Cards and panels         | `card.tsx`, `frame.tsx`, `group.tsx`                                                                                    |
+| Sidebar and toolbar      | `sidebar.tsx`, `toolbar.tsx`, `breadcrumb.tsx`                                                                          |
+| Tabs                     | `tabs.tsx`                                                                                                              |
+| Data display             | `table.tsx`, `badge.tsx`, `avatar.tsx`, `pagination.tsx`, `progress.tsx`, `meter.tsx`                                   |
+| Empty and loading        | `empty.tsx`, `skeleton.tsx`, `spinner.tsx`                                                                              |
+| Feedback                 | `alert.tsx`, `toast.tsx`, `tooltip.tsx`, `kbd.tsx`                                                                      |
+| Overlays                 | `dialog.tsx`, `alert-dialog.tsx`, `sheet.tsx`, `drawer.tsx`                                                             |
+| Menus                    | `dropdown-menu.tsx`, `context-menu.tsx`, `command.tsx`, `menu.tsx`                                                      |
+| Popup content            | `popover.tsx`, `preview-card.tsx`                                                                                       |
+| Scrolling and disclosure | `scroll-area.tsx`, `collapsible.tsx`, `accordion.tsx`                                                                   |
+| Media                    | `media.tsx`                                                                                                             |
+| Specialized input        | `calendar.tsx`, `number-field.tsx`, `otp-field.tsx`, `slider.tsx`, `textarea.tsx`                                       |
 
-组件导入路径统一为 `~/components/ui/<name>`。具体 API 与反例见 [GENERAL.md](./GENERAL.md)。
+Import every component from `~/components/ui/<name>`. APIs and counterexamples are in [GENERAL.md](./GENERAL.md).
 
-## 7. 常见反模式
+## 7. Common anti-patterns
 
-| 症状                          | 做法                                          |
-| ----------------------------- | --------------------------------------------- |
-| 紫蓝渐变、装饰性发光          | 主色 + 中性色；渐变只用于品牌插画或媒体占位   |
-| 每张卡都有边框和阴影          | 默认无容器；用留白或一条分隔线分组            |
-| 卡片里再套卡片                | 一层表面；分区用 `FramePanel` 或分隔线        |
-| 所有区块同样权重              | 一个主操作、一组主数字，其余降级              |
-| 顶部一排等权重统计卡          | 先给结论与待办；数字限制在 4 个，明细进对话框 |
-| 字号只差 1–2px                | 使用固定字阶，档位之间至少 2px                |
-| 空数据用 0 冒充               | 显示加载中、失败或空状态，并写清下一步        |
-| 每屏都塞满配置                | 配置进对话框或 Sheet，页面保留摘要与入口      |
-| 手写 `<div>` 模拟按钮、输入框 | 使用 `Button`、`Input`、`InputGroup`          |
-| 用颜色单独区分成功与失败      | 颜色 + 文字或图标                             |
+| Symptom                                       | Rule                                                                         |
+| --------------------------------------------- | ---------------------------------------------------------------------------- |
+| Purple-blue gradients, decorative glow        | Primary plus neutrals; gradients only for brand art or media placeholders    |
+| Every card has a border and a shadow          | Default to no container; group with whitespace or one divider                |
+| A card inside a card                          | One surface; split with `FramePanel` or a divider                            |
+| Every section has the same weight             | One primary action, one set of key numbers, the rest demoted                 |
+| A row of equal-weight stat cards              | Start with the conclusion and the next action; cap numbers at four           |
+| Type sizes differ by 1–2 px                   | Use the fixed scale; keep at least 2 px between steps                        |
+| Empty data shown as `0`                       | Show loading, error, or empty with a next step                               |
+| Every screen filled with configuration        | Move configuration into a dialog or sheet; keep a summary and an entry point |
+| Hand-written `<div>` buttons and inputs       | Use `Button`, `Input`, `InputGroup`                                          |
+| Color alone distinguishes success and failure | Color plus text or an icon                                                   |
 
-## 8. 参考
+## 8. References
 
 - [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
 - [NN/g: Visual Hierarchy](https://www.nngroup.com/articles/visual-hierarchy-ux-definition/)

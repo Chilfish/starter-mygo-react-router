@@ -1,71 +1,71 @@
 ---
-审查日期: YYYY-MM-DD
-审查范围: （app/ 全部源码 + 路由 + 配置 + 测试 + UI 交互）
-审查方式: （AI 外部审查 / 人工，多轴视角）
-分支: main @ <hash>
+review_date: YYYY-MM-DD
+scope: (app/ source, routes, configuration, tests, and UI interaction)
+method: (AI external review / human review; multiple axes)
+branch: main @ <hash>
 ---
 
-# {项目名} 审查记录（YYYY-MM-DD）
+# {Project} review (YYYY-MM-DD)
 
-> 本档 = 前次审查（[review-YYYY-MM-DD](./review-YYYY-MM-DD.md)）的增量审视。
-> 上轮问题逐条核验（见 §一），只聚焦增量问题。本档是后续行动计划（todo-*）的依据。
+> This record is an incremental pass over the previous review (`review-YYYY-MM-DD.md`).
+> Verify every previous finding in section 1. Focus on new findings. This record feeds the `todo-*` plan.
 
-## 〇、总评
+## 1. Overall assessment
 
-（整体质量判断 + 一句话核心主题。）
+(Overall quality plus the one core theme.)
 
-### 分维度评分
+### Scores
 
-| 维度      | 评分 | 一句话 |
-| --------- | ---- | ------ |
-| 正确性    | ⭐   |        |
-| 安全/授权 | ⭐   |        |
-| 资源纪律  | ⭐   |        |
-| 测试      | ⭐   |        |
-| UI/UX     | ⭐   |        |
-| 工程文化  | ⭐   |        |
+| Area                       | Score | Note |
+| -------------------------- | ----- | ---- |
+| Correctness                | 1–5   |      |
+| Security and authorization | 1–5   |      |
+| Resource discipline        | 1–5   |      |
+| Testing                    | 1–5   |      |
+| UI and UX                  | 1–5   |      |
+| Engineering practice       | 1–5   |      |
 
-## 一、前次审查修复确认
+## 2. Previous findings
 
-| #   | 上轮问题 | 修复证据 | 状态    |
-| --- | -------- | -------- | ------- |
-|     |          |          | ✅ / ❌ |
+| #   | Previous finding | Evidence of fix | Status       |
+| --- | ---------------- | --------------- | ------------ |
+|     |                  |                 | Fixed / Open |
 
-## 二、做得好的（值得固化）
+## 3. What worked (keep doing it)
 
-1. （行为）
-2. （行为）
+1. (Behavior)
+2. (Behavior)
 
-## 三、问题清单（按严重度）
+## 4. Findings by severity
 
-### 🔴 Z — 安全与授权
+### Z — Security and authorization
 
-| #   | 问题 | 位置 | 说明 |
-| --- | ---- | ---- | ---- |
+| #   | Finding | Location | Detail |
+| --- | ------- | -------- | ------ |
 
-### 🟠 R — 资源与健壮性
+### R — Resources and robustness
 
-| #   | 问题 | 位置 | 说明 |
-| --- | ---- | ---- | ---- |
+| #   | Finding | Location | Detail |
+| --- | ------- | -------- | ------ |
 
-### 🟡 E — 工程质量
+### E — Engineering quality
 
-| #   | 问题 | 位置 | 说明 |
-| --- | ---- | ---- | ---- |
+| #   | Finding | Location | Detail |
+| --- | ------- | -------- | ------ |
 
-### 🎨 U — UI/UX
+### U — UI and UX
 
-| #   | 问题 | 位置 | 说明 |
-| --- | ---- | ---- | ---- |
+| #   | Finding | Location | Detail |
+| --- | ------- | -------- | ------ |
 
-## 四、根因分析（blameless）
+## 5. Root cause (blameless)
 
-（对照 postmortem 跨切片教训，找共性问题而非个人。）
+(Compare lessons across postmortems. Look for shared conditions, not personal mistakes.)
 
-## 五、行动优先级
+## 6. Priority
 
-**P0（阻断）** / **P1（重要）** / **P2（债务）**
+**P0 (blocking)** / **P1 (important)** / **P2 (debt)**
 
-## 参考
+## References
 
-- 前次审查 / UI 专项 / 系统架构 / postmortem 索引
+- Previous review, UI review, architecture, and the postmortem index

@@ -1,27 +1,27 @@
-# 需求文档（Requirements）
+# Requirements
 
-starter-mygo-react-router 的需求规格说明、用户故事与验收标准。**需求文档为项目真相源**——所有功能需求的权威描述在此，backlog 与阶段计划为派生执行文档。
+Requirements for starter-mygo-react-router: specification, user stories, and acceptance criteria. **This directory is the source of truth for product requirements.** The backlog and stage plans derive from it.
 
-## 文档索引
+## Index
 
-| 文档                                           | 说明                                                                                | 何时阅读                           |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------- |
-| [requirements-spec.md](./requirements-spec.md) | 需求规格说明（PRD）：产品愿景 / 范围 / 功能需求清单（FR-ID）/ 非功能需求 / 需求溯源 | 新增功能、架构变更、判断功能边界   |
-| [user-stories.md](./user-stories.md)           | 用户故事（User Stories）：按 Epic 分组，每个故事标注状态与验收标准                  | 理解用户需求、设计新特性、评估范围 |
+| Document                                       | Contents                                                                                   | Read when                                |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| [requirements-spec.md](./requirements-spec.md) | Product scope, functional requirements (FR IDs), non-functional requirements, traceability | Adding a feature, checking scope         |
+| [user-stories.md](./user-stories.md)           | User stories grouped by epic, each with status and acceptance criteria                     | Understanding users, designing a feature |
 
-## 约定
+## Conventions
 
-1. 所有需求文档用中文
-2. FR 编号格式：`FR-{模块}-{序号}`（与 `backlog.md` 的 B# / U# 编号体系独立；FR 是静态需求，B#/U# 是动态任务）
-3. 每条 FR 有唯一 ID、优先级（P0/P1/P2）、状态（✅ 已完成 / 📋 规划中 / ⏸️ 暂缓 / ❌ 已移除）、验收标准、需求来源
-4. 功能需求变更时同步更新 `requirements-spec.md` 并记录变更日期
-5. 新增用户故事时追加到 `user-stories.md` 对应 Epic
-6. 版本号递增：`v1.0` → `v1.1`（增量），`v2.0`（破坏性范围变更）
+1. All requirement documents are English.
+2. FR format: `FR-{module}-{number}`. FR IDs describe stable requirements; backlog IDs describe moving tasks.
+3. Every FR has a unique ID, priority (P0/P1/P2), status (`Done`, `Planned`, `Paused`, `Removed`), acceptance criteria, and a source.
+4. When a requirement changes, update `requirements-spec.md` and record the date.
+5. Append new user stories to the matching epic in `user-stories.md`.
+6. Version numbers increase as `v1.0` → `v1.1` for increments and `v2.0` for a breaking scope change.
 
-### 验收标准（AC）
+### Acceptance criteria
 
-- **先写 AC 再实现**：验收标准描述可观察的行为和期望结果，不描述实现细节
-- 编号格式：`AC-{模块}-{序号}`；有对应测试时，测试名与编号 1:1（`it('AC-SEO-001: ...')`）
-- AC 必须能失败：故意改坏被测行为时，对应测试应变红
-- 源码扫描（检查文件里是否存在某个字符串）只能作辅助检查，不能作为 AC 的通过条件
-- AC 变更时同步更新测试和 `requirements-spec.md`，并在开发日志记录原因
+- **Write AC before implementation**: An AC describes observable behavior and the expected result, not implementation details.
+- Format: `AC-{module}-{number}`. When a test exists, its name matches one-to-one (`it('AC-SEO-001: ...')`).
+- An AC must be able to fail: breaking the behavior turns the matching test red.
+- A source scan (checking that a file contains a string) is a supporting check, never the pass condition for an AC.
+- When an AC changes, update the test and `requirements-spec.md`, and record the reason in the development log.
