@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            target: darwin/universal
+          - name: Windows x64
+            os: ubuntu-latest
+            target: windows/amd64
+          - name: Windows arm64
+            os: ubuntu-latest
+            target: windows/arm64
+          - name: Linux x64
+            os: ubuntu-latest
+            target: linux/amd64
+          - name: Linux arm64
+            os: ubuntu-latest
+            target: linux/arm64
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag matches package.json
+        run: test "$GITHUB_REF_NAME" = "v$(jq -r .version package.json)"
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Install NSIS for the Windows installers
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y nsis
+
+      - name: Build
+        run: bun run build -- -platform "${{ matrix.target }}"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}
+          path: release/
+          if-no-files-found: error

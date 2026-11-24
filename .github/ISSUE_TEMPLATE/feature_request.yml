@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest an improvement to the starter.
+title: '[Feature]: '
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is missing or hard to do today?
+      placeholder: Describe the use case, not only the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should the starter do instead?
+      placeholder: The change you would like to see, and how it fits the existing structure.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Go host and bindings
+        - React Router and pages
+        - coss UI components
+        - Tailwind and design tokens
+        - Build, release, or CI
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Other approaches you considered, or workarounds you use now.
+    validations:
+      required: false

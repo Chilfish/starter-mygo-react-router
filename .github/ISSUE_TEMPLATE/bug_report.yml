@@ -1,0 +1,79 @@
+name: Bug report
+description: Report something that does not work in the starter.
+title: '[Bug]: '
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Search existing issues first, and read the
+        [documentation](https://github.com/Chilfish/starter-mygo-react-router/blob/main/docs/README.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+      placeholder: A short description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest sequence that shows the problem.
+      placeholder: |
+        1. Run bun run dev
+        2. Open the home page
+        3. Type in the search field
+    validations:
+      required: true
+  - type: dropdown
+    id: target
+    attributes:
+      label: Where did it happen?
+      options:
+        - mygo dev (desktop)
+        - Packaged app from mygo build
+        - bun run dev:web (browser preview)
+        - iOS
+        - Android
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - iOS
+        - Android
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: The app version, MyGo version, Go version, and Bun version. `bun run doctor` prints most of them.
+      placeholder: 0.1.0, MyGo 0.10.0, Go 1.27.3, Bun 1.4.5
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and screenshots
+      description: Terminal output, DevTools console output, or screenshots.
+      render: shell
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and the documentation.
+          required: true
+        - label: I can reproduce this on the latest main branch.
+          required: false
