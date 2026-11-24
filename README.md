@@ -3,6 +3,7 @@
 [![CI](https://github.com/Chilfish/starter-mygo-react-router/actions/workflows/ci.yml/badge.svg)](https://github.com/Chilfish/starter-mygo-react-router/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![MyGo 0.10](https://img.shields.io/badge/MyGo-0.10-blue)](https://mygo.egoist.dev/)
+[![Listed on Awesome MyGo](https://awesomemygo.dev/badge.svg)](https://awesomemygo.dev/templates)
 
 A desktop app starter built with [MyGo](https://mygo.egoist.dev/) 0.10, React Router v8 (SPA), [coss UI](https://coss.com/ui/), Tailwind CSS v4, and Bun. The same Go and React code also runs on iPhone, iPad and Android.
 
