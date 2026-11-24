@@ -16,6 +16,11 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # typescript-eslint only supports the TypeScript 6 API.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: gomod
     directory: /
